@@ -14,15 +14,24 @@ CREATE TABLE "user" (
   family_name TEXT NOT NULL,
   name TEXT NOT NULL,
   gender TEXT NOT NULL,
+  ic_number TEXT NOT NULL,
+  phone_number TEXT NOT NULL,
   nickname TEXT,
   picture TEXT,
-  ic_number TEXT,
-  phone_number TEXT,
+  cg_id INTEGER,
   PRIMARY KEY (id),
   UNIQUE (email),
-  FOREIGN KEY (gender) REFERENCES gender(gender) ON UPDATE CASCADE
+  FOREIGN KEY (gender) REFERENCES gender(gender) ON UPDATE CASCADE,
+  FOREIGN KEY (cg_id) REFERENCES cg(id) ON UPDATE CASCADE ON DELETE SET NULL
 );
 
 -- To start the id from 80
 ALTER SEQUENCE user_id_seq RESTART WITH 100; 
+
+CREATE TABLE cg (
+  id SERIAL,
+  name TEXT NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE (name)
+);
 

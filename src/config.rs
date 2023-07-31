@@ -8,7 +8,7 @@
 /// directory where the application is started.
 ///
 /// See `.env.example` in the repository root for details.
-#[derive(clap::Parser)]
+#[derive(clap::Parser, Debug, Clone)]
 pub struct Config {
     /// The port number that the application should listen on.
     #[clap(long, env, default_value = "0.0.0.0")]
@@ -33,4 +33,8 @@ pub struct Config {
     /// The client secret for Auth0 app.
     #[clap(long, env)]
     pub auth0_client_secret: String,
+
+    /// The name of the database connection for Auth0 app.
+    #[clap(long, env)]
+    pub auth0_connection: String,
 }

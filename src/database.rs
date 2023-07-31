@@ -10,10 +10,11 @@ pub struct User {
     pub family_name: String,
     pub name: String,
     pub gender: String,
+    pub ic_number: String,
+    pub phone_number: String,
     pub nickname: Option<String>,
     pub picture: Option<String>,
-    pub ic_number: Option<String>,
-    pub phone_number: Option<String>,
+    pub cg_id: Option<i32>,
 }
 
 #[derive(Debug, Clone)]
