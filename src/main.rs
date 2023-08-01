@@ -45,15 +45,17 @@ async fn main() -> Result<(), anyhow::Error> {
         .server(&format!("http://{}:{}", config.address, config.port));
     let swagger = service.swagger_ui();
     let explorer = service.openapi_explorer();
+    let specs = service.spec();
 
     let routes = Route::new()
         .nest("/", service)
         .nest("/docs", swagger)
         .nest("/explorer", explorer)
+        .at("/specs", poem::endpoint::make_sync(move |_| specs.clone()))
         .with(Tracing)
         .with(Cors::new())
         .data(database)
-        .data(config);
+        .data(config.clone());
 
     #[cfg(not(feature = "lambda"))]
     poem::Server::new(poem::listener::TcpListener::bind(&format!(
