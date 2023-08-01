@@ -18,6 +18,10 @@ pub struct Config {
     #[clap(long, env, default_value_t = 8000)]
     pub port: u16,
 
+    /// The OpenAPI URL Address.
+    #[clap(long, env, default_value = "http://0.0.0.0")]
+    pub oai_address: String,
+
     /// The connection URL for the Postgres database this application should use.
     #[clap(long, env)]
     pub database_url: String,

@@ -42,7 +42,7 @@ async fn main() -> Result<(), anyhow::Error> {
     );
 
     let service = OpenApiService::new(routes::Routes::new(Arc::new(auth)), "FGACYC Auth", "0.0.1")
-        .server(&format!("http://{}:{}", config.address, config.port));
+        .server(&config.oai_address);
     let swagger = service.swagger_ui();
     let explorer = service.openapi_explorer();
     let specs = service.spec();
