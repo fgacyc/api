@@ -1,7 +1,11 @@
 use serde::{Deserialize, Serialize};
-use sqlx::{postgres::PgPoolOptions, PgPool};
+use sqlx::{
+    postgres::PgPoolOptions,
+    types::chrono::{self, Utc},
+    PgPool,
+};
 
-#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
+#[derive(Debug, Clone, Deserialize, Serialize, sqlx::FromRow)]
 pub struct User {
     pub id: i32,
     pub email: String,
@@ -15,6 +19,8 @@ pub struct User {
     pub nickname: Option<String>,
     pub picture: Option<String>,
     pub cg_id: Option<i32>,
+    pub created_at: chrono::DateTime<Utc>,
+    pub updated_at: chrono::DateTime<Utc>,
 }
 
 #[derive(Debug, Clone)]
