@@ -1,9 +1,8 @@
 use clap::Parser;
 use database::Database;
 use poem::{
-    listener::TcpListener,
     middleware::{Cors, Tracing},
-    EndpointExt, Result, Route, Server,
+    EndpointExt, Result, Route,
 };
 use poem_openapi::OpenApiService;
 use std::sync::Arc;
@@ -47,21 +46,27 @@ async fn main() -> Result<(), anyhow::Error> {
     let swagger = service.swagger_ui();
     let explorer = service.openapi_explorer();
 
-    Server::new(TcpListener::bind(&format!(
+    let routes = Route::new()
+        .nest("/", service)
+        .nest("/docs", swagger)
+        .nest("/explorer", explorer)
+        .with(Tracing)
+        .with(Cors::new())
+        .data(database)
+        .data(config);
+
+    #[cfg(not(feature = "lambda"))]
+    poem::Server::new(poem::listener::TcpListener::bind(&format!(
         "{}:{}",
         config.address, config.port
     )))
-    .run(
-        Route::new()
-            .nest("/", service)
-            .nest("/docs", swagger)
-            .nest("/explorer", explorer)
-            .with(Tracing)
-            .with(Cors::new())
-            .data(database)
-            .data(config),
-    )
+    .run(routes)
     .await?;
+
+    #[cfg(feature = "lambda")]
+    poem_lambda::run(routes)
+        .await
+        .map_err(|e| anyhow::anyhow!("Failed running on lambda: {:?}", e))?;
 
     Ok(())
 }
