@@ -1,18 +1,18 @@
 use poem::web;
 use poem_openapi::{payload, OpenApi};
-use std::sync::Arc;
 
 mod cg;
 mod health;
 mod signup;
 
 pub struct Routes {
-    auth: Arc<auth0::authentication::Api>,
+    auth: auth0::authentication::Api,
+    management: auth0::management::Api,
 }
 
 impl Routes {
-    pub fn new(auth: Arc<auth0::authentication::Api>) -> Self {
-        Self { auth }
+    pub fn new(auth: auth0::authentication::Api, management: auth0::management::Api) -> Self {
+        Self { auth, management }
     }
 }
 

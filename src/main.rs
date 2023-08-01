@@ -5,7 +5,6 @@ use poem::{
     EndpointExt, Result, Route,
 };
 use poem_openapi::OpenApiService;
-use std::sync::Arc;
 
 use crate::config::Config;
 
@@ -22,7 +21,7 @@ async fn main() -> Result<(), anyhow::Error> {
 
     // Set up tracing
     if std::env::var_os("RUST_LOG").is_none() {
-        std::env::set_var("RUST_LOG", "poem=debug,auth=info");
+        std::env::set_var("RUST_LOG", "poem=debug,auth=info,auth0=debug");
     }
     tracing_subscriber::fmt::init();
 
@@ -32,17 +31,27 @@ async fn main() -> Result<(), anyhow::Error> {
     // Make a connection to the database
     let database = Database::new(&config.database_url).await?;
 
-    // Make an api client for Auth0
+    // Make the api clients for Auth0
     let auth = auth0::authentication::Api::init(
         reqwest::Url::parse(&config.auth0_domain)?,
-        auth0::authentication::AuthenicationMethod::ClientIDClientSecret(
+        auth0::authentication::AuthenticationMethod::ClientIDClientSecret(
             config.auth0_client_id.clone(),
             config.auth0_client_secret.clone(),
         ),
     );
+    let management = auth0::management::Api::init(
+        reqwest::Url::parse(&config.auth0_domain)?,
+        config.auth0_client_id.clone(),
+        config.auth0_client_secret.clone(),
+    )
+    .await?;
 
-    let service = OpenApiService::new(routes::Routes::new(Arc::new(auth)), "FGACYC Auth", "0.0.1")
-        .server(&config.oai_address);
+    let service = OpenApiService::new(
+        routes::Routes::new(auth, management),
+        "FGACYC Auth",
+        "0.0.1",
+    )
+    .server(&config.oai_address);
     let swagger = service.swagger_ui();
     let explorer = service.openapi_explorer();
     let specs = service.spec();

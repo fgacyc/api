@@ -1,13 +1,96 @@
 use std::collections::HashMap;
 
-use auth0::authentication::signup::Signup;
+use auth0::{
+    authentication::signup::Signup,
+    management::{
+        roles::{ListRolesRequestParameters, Roles},
+        users::{AssignRolesToUserRequestParameters, Users},
+    },
+};
 use poem::{error, web};
-use poem_openapi::{payload, Object};
+use poem_openapi::{payload, Enum, Object};
 use reqwest::StatusCode;
 use serde::{Deserialize, Serialize};
 use sqlx::Row;
 
 use crate::{config::Config, database::Database, error::ErrorResponse};
+
+#[derive(Debug, Copy, Clone, Deserialize, Serialize, Enum)]
+#[serde(rename_all = "lowercase")]
+pub enum Gender {
+    #[oai(rename = "male")]
+    Male,
+
+    #[oai(rename = "female")]
+    Female,
+}
+
+impl std::fmt::Display for Gender {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            serde_json::to_value(self).unwrap().as_str().unwrap()
+        )
+    }
+}
+
+#[derive(Debug, Copy, Clone, Deserialize, Serialize, Enum)]
+pub enum Role {
+    #[oai(rename = "p_team_leader")]
+    #[serde(rename = "p_team_leader")]
+    PastoralTeamLeader,
+
+    #[oai(rename = "p_coach")]
+    #[serde(rename = "p_coach")]
+    Coach,
+
+    #[oai(rename = "p_cell_group_leader")]
+    #[serde(rename = "p_cell_group_leader")]
+    CellGroupLeader,
+
+    #[oai(rename = "p_host")]
+    #[serde(rename = "p_host")]
+    Host,
+
+    #[oai(rename = "p_ordinary_member")]
+    #[serde(rename = "p_ordinary_member")]
+    OrdinaryMember,
+
+    #[oai(rename = "p_new_believer")]
+    #[serde(rename = "p_new_believer")]
+    NewBeliever,
+
+    #[oai(rename = "p_new_friend")]
+    #[serde(rename = "p_new_friend")]
+    NewFriend,
+
+    #[oai(rename = "p_new_friend")]
+    #[serde(rename = "p_new_friend")]
+    Visitor,
+
+    #[oai(rename = "m_pic")]
+    #[serde(rename = "m_pic")]
+    MinistryPersonInCharge,
+
+    #[oai(rename = "m_department_head")]
+    #[serde(rename = "m_department_head")]
+    MinistryDepartmentHead,
+
+    #[oai(rename = "m_team_lead")]
+    #[serde(rename = "m_team_lead")]
+    MinistryTeamLead,
+}
+
+impl std::fmt::Display for Role {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            f,
+            "{}",
+            serde_json::to_value(self).unwrap().as_str().unwrap()
+        )
+    }
+}
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object)]
 pub struct SignUpRequest {
@@ -17,9 +100,10 @@ pub struct SignUpRequest {
     given_name: String,
     family_name: String,
     name: String,
-    gender: String,
+    gender: Gender,
     ic_number: String,
     phone_number: String,
+    roles: Option<Vec<Role>>,
     nickname: Option<String>,
     picture: Option<String>,
     cg_id: Option<i32>,
@@ -52,7 +136,7 @@ pub enum SignUpError {
     UsernameAlreadyInUse { username: String },
 
     #[error("The gender '{gender}' is not valid, must be either 'male' or 'female'")]
-    InvalidGender { gender: String },
+    InvalidGender { gender: Gender },
 
     #[error("The cg '{cg}' cannot be found")]
     CGNotFound { cg: i32 },
@@ -107,7 +191,7 @@ impl super::Routes {
         .bind(&body.given_name)
         .bind(&body.family_name)
         .bind(&body.name)
-        .bind(&body.gender)
+        .bind(&body.gender.to_string())
         .bind(&body.nickname)
         .bind(&body.picture)
         .bind(&body.ic_number)
@@ -145,7 +229,7 @@ impl super::Routes {
             {
                 SignUpResponseError::NotFound(payload::Json(ErrorResponse::from(
                     &SignUpError::InvalidGender {
-                        gender: body.gender.clone(),
+                        gender: body.gender,
                     } as &(dyn std::error::Error + Send + Sync),
                 )))
             }
@@ -219,7 +303,77 @@ impl super::Routes {
                         as &(dyn std::error::Error + Send + Sync)),
                 )));
             }
-            Ok(resp) => tracing::info!("Created a user in Auth0: {:?}", resp),
+            Ok(resp) => {
+                // Parse the create user response.
+                let auth0::authentication::signup::Response { id, .. } = resp
+                    .json::<auth0::authentication::signup::Response>()
+                    .await
+                    .map_err(|e| {
+                        SignUpResponseError::InternalServerError(payload::Json(ErrorResponse {
+                            message: e.to_string(),
+                        }))
+                    })?;
+                tracing::info!("Created a user in Auth0 with id {}", id);
+
+                // Add roles to this user.
+                if let Some(roles) = body.roles.clone() {
+                    let roles = roles
+                        .into_iter()
+                        .map(|r| r.to_string())
+                        .collect::<Vec<String>>();
+                    // Fetch the role ids from auth0.
+                    let roles = self
+                        .management
+                        .list_roles(ListRolesRequestParameters {
+                            page: None,
+                            per_page: None,
+                            include_totals: None,
+                            name_filter: None,
+                        })
+                        .send()
+                        .await
+                        .map_err(|e| {
+                            SignUpResponseError::InternalServerError(payload::Json(ErrorResponse {
+                                message: e.to_string(),
+                            }))
+                        })?
+                        .json::<Vec<auth0::models::Role>>()
+                        .await
+                        .map_err(|e| {
+                            SignUpResponseError::InternalServerError(payload::Json(ErrorResponse {
+                                message: e.to_string(),
+                            }))
+                        })?
+                        .into_iter()
+                        .filter_map(|role| match roles.contains(&role.name) {
+                            true => Some(role.id),
+                            false => None,
+                        })
+                        .collect::<Vec<String>>();
+
+                    // Call auth0 to assign roles to this user.
+                    tracing::info!("Assigning roles {:?} to user {}", roles, id);
+                    self.management
+                        .assign_roles_to_user(
+                            format!("auth0|{}", id),
+                            AssignRolesToUserRequestParameters {
+                                roles: roles
+                                    .clone()
+                                    .into_iter()
+                                    .map(|role| role.to_string())
+                                    .collect(),
+                            },
+                        )
+                        .send()
+                        .await
+                        .map_err(|e| {
+                            SignUpResponseError::InternalServerError(payload::Json(ErrorResponse {
+                                message: e.to_string(),
+                            }))
+                        })?;
+                    tracing::info!("Assigned roles {:?} to user {}", roles, id);
+                }
+            }
         }
 
         tx.commit().await.map_err(|e| {
