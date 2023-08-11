@@ -17,11 +17,12 @@ COMMENT ON COLUMN _address.country IS 'Two-letter country code (ISO 3166-1 alpha
 COMMENT ON COLUMN _address.postal_code IS 'ZIP or postal code.';
 
 CREATE DOMAIN address AS _address CHECK (
-  (value).line_one IS NOT NULL AND
-  (value).city IS NOT NULL AND
-  (value).state IS NOT NULL AND
-  (value).country IS NOT NULL AND
-  (value).postal_code IS NOT NULL
+  (VALUE).line_one IS NOT NULL AND
+  (VALUE).city IS NOT NULL AND
+  (VALUE).state IS NOT NULL AND
+  (VALUE).country IS NOT NULL AND
+  (VALUE).postal_code IS NOT NULL
+  OR VALUE IS NULL
 );
 
 CREATE TABLE satellite (

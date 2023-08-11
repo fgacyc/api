@@ -1,9 +1,14 @@
 use poem::web;
 use poem_openapi::{param::Path, payload, OpenApi};
 
+use crate::database::Database;
+
+use self::users::{NewUserRequest, NewUserResponse, NewUserResponseError};
+
 mod cg;
 mod health;
 mod signup;
+mod users;
 
 pub struct Routes {
     auth: auth0::authentication::Api,
@@ -36,8 +41,12 @@ impl Routes {
     /* User */
 
     #[oai(path = "/users", method = "post")]
-    async fn create_user(&self) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn create_user(
+        &self,
+        db: web::Data<&Database>,
+        body: payload::Json<NewUserRequest>,
+    ) -> Result<NewUserResponse, NewUserResponseError> {
+        self._create_user(db, body).await
     }
 
     #[oai(path = "/users", method = "get")]
