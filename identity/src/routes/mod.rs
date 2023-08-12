@@ -1,9 +1,14 @@
 use poem::web;
 use poem_openapi::{param::Path, payload, OpenApi, Tags};
 
+use crate::database::Database;
+
+use self::users::{NewUserRequest, NewUserResponse, NewUserResponseError};
+
 mod cg;
 mod health;
 mod signup;
+mod users;
 
 #[derive(Tags)]
 enum Tag {
@@ -63,8 +68,12 @@ impl Routes {
         operation_id = "create-user",
         tag = "Tag::User"
     )]
-    async fn create_user(&self) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn create_user(
+        &self,
+        db: web::Data<&Database>,
+        body: payload::Json<NewUserRequest>,
+    ) -> Result<NewUserResponse, NewUserResponseError> {
+        self._create_user(db, body).await
     }
 
     /// List or search users
