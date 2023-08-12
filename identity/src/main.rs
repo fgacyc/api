@@ -52,14 +52,12 @@ async fn main() -> Result<(), anyhow::Error> {
         "0.0.1",
     )
     .server(&config.oai_address);
-    let swagger = service.swagger_ui();
-    let explorer = service.openapi_explorer();
+    let rapidoc = service.rapidoc();
     let specs = service.spec();
 
     let routes = Route::new()
         .nest("/", service)
-        .nest("/docs", swagger)
-        .nest("/explorer", explorer)
+        .nest("/docs", rapidoc)
         .at("/specs", poem::endpoint::make_sync(move |_| specs.clone()))
         .with(Tracing)
         .with(Cors::new())
