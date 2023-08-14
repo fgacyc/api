@@ -72,7 +72,7 @@ impl<'r> ::sqlx::decode::Decode<'r, ::sqlx::Postgres> for Address {
 
 impl ::sqlx::Type<::sqlx::Postgres> for Address {
     fn type_info() -> ::sqlx::postgres::PgTypeInfo {
-        ::sqlx::postgres::PgTypeInfo::with_name("address")
+        ::sqlx::postgres::PgTypeInfo::with_name("_address")
     }
 }
 
@@ -189,7 +189,7 @@ impl super::Routes {
         .bind(&body.no)
         .bind(&body.name)
         .bind(&body.email)
-        .bind(&body.email_verified)
+        .bind(&body.email_verified.unwrap_or(false))
         .bind(&body.username)
         .bind(&body.given_name)
         .bind(&body.family_name)
