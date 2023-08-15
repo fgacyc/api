@@ -8,8 +8,8 @@ use self::{
         CreateConnecGroupRequest, CreateConnectGroupError, CreateConnectGroupResponse,
     },
     users::{
-        ListUsersResponse, ListUsersResponseError, NewUserRequest, NewUserResponse,
-        NewUserResponseError,
+        GetUserResponse, GetUserResponseError, ListUsersResponse, ListUsersResponseError,
+        NewUserRequest, NewUserResponse, NewUserResponseError,
     },
 };
 
@@ -110,8 +110,12 @@ impl Routes {
         operation_id = "get-user",
         tag = "Tag::User"
     )]
-    async fn get_user(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn get_user(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<GetUserResponse, GetUserResponseError> {
+        self._get_user(db, id.to_string()).await
     }
 
     /// Update a user
