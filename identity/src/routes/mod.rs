@@ -3,9 +3,9 @@ use poem_openapi::{param::Path, payload, OpenApi, Tags};
 
 use crate::database::Database;
 
-use self::users::{NewUserRequest, NewUserResponse, NewUserResponseError};
+use self::{users::{NewUserRequest, NewUserResponse, NewUserResponseError}, connect_group::{CreateConnecGroupRequest, CreateConnectGroupResponse, CreateConnectGroupError}};
 
-mod cg;
+mod connect_group;
 mod health;
 mod signup;
 mod users;
@@ -246,8 +246,12 @@ impl Routes {
         operation_id = "create-connect-group",
         tag = "Tag::ConnectGroup"
     )]
-    async fn create_connect_group(&self) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn create_connect_group(
+        &self,
+        db: web::Data<&Database>,
+        body: payload::Json<CreateConnecGroupRequest>,
+    ) -> Result<CreateConnectGroupResponse, CreateConnectGroupError> {
+        self._create_connect_group(db, body).await
     }
 
     /// List or search connect groups
