@@ -247,3 +247,37 @@ impl super::Routes {
         Ok(NewUserResponse::Ok(payload::Json(user)))
     }
 }
+
+#[derive(poem_openapi::ApiResponse)]
+pub enum ListUsersResponse {
+    #[oai(status = 200)]
+    Ok(payload::Json<Vec<User>>),
+}
+
+#[derive(poem_openapi::ApiResponse)]
+pub enum ListUsersResponseError {
+    #[oai(status = 500)]
+    InternalServerError(payload::Json<ErrorResponse>),
+}
+
+impl super::Routes {
+    pub async fn _list_users(
+        &self,
+        db: web::Data<&Database>,
+    ) -> Result<ListUsersResponse, ListUsersResponseError> {
+        let users: Vec<User> = sqlx::query_as(
+            r#"
+            SELECT * from "user"
+            "#,
+        )
+        .fetch_all(&db.db)
+        .await
+        .map_err(|e| match e {
+            _ => ListUsersResponseError::InternalServerError(payload::Json(ErrorResponse::from(
+                &e as &(dyn std::error::Error + Send + Sync),
+            ))),
+        })?;
+
+        Ok(ListUsersResponse::Ok(payload::Json(users)))
+    }
+}
