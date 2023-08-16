@@ -4,11 +4,13 @@ use poem_openapi::{param::Path, payload, OpenApi, Tags};
 use crate::database::Database;
 
 use self::{users::{NewUserRequest, NewUserResponse, NewUserResponseError}, connect_group::{CreateConnecGroupRequest, CreateConnectGroupResponse, CreateConnectGroupError}};
+use self::ministry_role::{CreateMinistryRoleRequest, CreateMinistryRoleResponse, CreateMinistryRoleError};
 
 mod connect_group;
 mod health;
 mod signup;
 mod users;
+mod ministry_role;
 
 #[derive(Tags)]
 enum Tag {
@@ -429,8 +431,12 @@ impl Routes {
         operation_id = "create-ministry-role",
         tag = "Tag::MinistryRole"
     )]
-    async fn create_ministry_role(&self) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn create_ministry_role(
+		&self,
+		db: web::Data<&Database>,
+		body: payload::Json<CreateMinistryRoleRequest>,
+	) -> Result<CreateMinistryRoleResponse, CreateMinistryRoleError> {
+        self._create_ministry_role(db, body).await
     }
 
     /// List or search ministry roles
