@@ -1,6 +1,7 @@
 use poem::web;
 use poem_openapi::{payload, Enum, Object};
 use serde::{Deserialize, Serialize};
+use sqlx::postgres::PgQueryResult;
 
 use crate::{database::Database, error::ErrorResponse};
 
@@ -282,11 +283,6 @@ impl super::Routes {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, Object)]
-pub struct GetUserRequest {
-    id: String,
-}
-
 #[derive(poem_openapi::ApiResponse)]
 pub enum GetUserResponse {
     #[oai(status = 200)]
@@ -326,5 +322,49 @@ impl super::Routes {
         })?;
 
         Ok(GetUserResponse::Ok(payload::Json(user)))
+    }
+}
+
+#[derive(poem_openapi::ApiResponse)]
+pub enum DeleteUserResponse {
+    #[oai(status = 200)]
+    Ok(payload::Json<String>),
+}
+
+#[derive(poem_openapi::ApiResponse)]
+pub enum DeleteUserResponseError {
+    #[oai(status = 500)]
+    InternalServerError(payload::Json<ErrorResponse>),
+
+    #[oai(status = 400)]
+    BadRequest(payload::Json<ErrorResponse>),
+
+    #[oai(status = 404)]
+    NotFoundError(payload::Json<ErrorResponse>),
+}
+
+impl super::Routes {
+    pub async fn _delete_user(
+        &self,
+        db: web::Data<&Database>,
+        id: String,
+    ) -> Result<DeleteUserResponse, DeleteUserResponseError> {
+        let results: PgQueryResult = sqlx::query(
+            r#"
+            DELETE from "user" WHERE id = $1::TEXT
+            "#,
+        )
+        .bind(&id)
+        .execute(&db.db)
+        .await
+        .map_err(|e| match e {
+            _ => DeleteUserResponseError::InternalServerError(payload::Json(ErrorResponse::from(
+                &e as &(dyn std::error::Error + Send + Sync),
+            ))),
+        })?;
+
+        Ok(DeleteUserResponse::Ok(payload::Json(
+            results.rows_affected().to_string(),
+        )))
     }
 }
