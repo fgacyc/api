@@ -247,3 +247,84 @@ impl super::Routes {
         Ok(NewUserResponse::Ok(payload::Json(user)))
     }
 }
+
+#[derive(poem_openapi::ApiResponse)]
+pub enum ListUsersResponse {
+    #[oai(status = 200)]
+    Ok(payload::Json<Vec<User>>),
+}
+
+#[derive(poem_openapi::ApiResponse)]
+pub enum ListUsersResponseError {
+    #[oai(status = 500)]
+    InternalServerError(payload::Json<ErrorResponse>),
+}
+
+impl super::Routes {
+    pub async fn _list_users(
+        &self,
+        db: web::Data<&Database>,
+    ) -> Result<ListUsersResponse, ListUsersResponseError> {
+        let users: Vec<User> = sqlx::query_as(
+            r#"
+            SELECT * from "user"
+            "#,
+        )
+        .fetch_all(&db.db)
+        .await
+        .map_err(|e| match e {
+            _ => ListUsersResponseError::InternalServerError(payload::Json(ErrorResponse::from(
+                &e as &(dyn std::error::Error + Send + Sync),
+            ))),
+        })?;
+
+        Ok(ListUsersResponse::Ok(payload::Json(users)))
+    }
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, Object)]
+pub struct GetUserRequest {
+    id: String,
+}
+
+#[derive(poem_openapi::ApiResponse)]
+pub enum GetUserResponse {
+    #[oai(status = 200)]
+    Ok(payload::Json<User>),
+}
+
+#[derive(poem_openapi::ApiResponse)]
+pub enum GetUserResponseError {
+    #[oai(status = 500)]
+    InternalServerError(payload::Json<ErrorResponse>),
+
+    #[oai(status = 400)]
+    BadRequest(payload::Json<ErrorResponse>),
+
+    #[oai(status = 404)]
+    NotFoundError(payload::Json<ErrorResponse>),
+}
+
+impl super::Routes {
+    pub async fn _get_user(
+        &self,
+        db: web::Data<&Database>,
+        id: String,
+    ) -> Result<GetUserResponse, GetUserResponseError> {
+        let user: User = sqlx::query_as(
+            r#"
+            SELECT * from "user" WHERE id = $1::TEXT
+            "#,
+        )
+        .bind(&id)
+        .fetch_one(&db.db)
+        .await
+        .map_err(|e| match e {
+            _ => GetUserResponseError::InternalServerError(payload::Json(ErrorResponse::from(
+                &e as &(dyn std::error::Error + Send + Sync),
+            ))),
+        })?;
+
+        Ok(GetUserResponse::Ok(payload::Json(user)))
+    }
+}

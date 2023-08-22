@@ -3,7 +3,15 @@ use poem_openapi::{param::Path, payload, OpenApi, Tags};
 
 use crate::database::Database;
 
-use self::{users::{NewUserRequest, NewUserResponse, NewUserResponseError}, connect_group::{CreateConnecGroupRequest, CreateConnectGroupResponse, CreateConnectGroupError}};
+use self::{
+    connect_group::{
+        CreateConnecGroupRequest, CreateConnectGroupError, CreateConnectGroupResponse,
+    },
+    users::{
+        GetUserResponse, GetUserResponseError, ListUsersResponse, ListUsersResponseError,
+        NewUserRequest, NewUserResponse, NewUserResponseError,
+    },
+};
 
 mod connect_group;
 mod health;
@@ -86,8 +94,11 @@ impl Routes {
         operation_id = "list-users",
         tag = "Tag::User"
     )]
-    async fn list_users(&self) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn list_users(
+        &self,
+        db: web::Data<&Database>,
+    ) -> Result<ListUsersResponse, ListUsersResponseError> {
+        self._list_users(db).await
     }
 
     /// Get a user
@@ -99,8 +110,12 @@ impl Routes {
         operation_id = "get-user",
         tag = "Tag::User"
     )]
-    async fn get_user(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn get_user(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<GetUserResponse, GetUserResponseError> {
+        self._get_user(db, id.to_string()).await
     }
 
     /// Update a user
