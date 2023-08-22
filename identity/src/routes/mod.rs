@@ -8,8 +8,9 @@ use self::{
         CreateConnecGroupRequest, CreateConnectGroupError, CreateConnectGroupResponse,
     },
     users::{
-        GetUserResponse, GetUserResponseError, ListUsersResponse, ListUsersResponseError,
-        NewUserRequest, NewUserResponse, NewUserResponseError,
+        DeleteUserResponse, DeleteUserResponseError, GetUserResponse, GetUserResponseError,
+        ListUsersResponse, ListUsersResponseError, NewUserRequest, NewUserResponse,
+        NewUserResponseError, UpdateUserRequest, UpdateUserResponse, UpdateUserResponseError,
     },
 };
 
@@ -127,21 +128,30 @@ impl Routes {
         operation_id = "update-user",
         tag = "Tag::User"
     )]
-    async fn update_user(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn update_user(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        body: payload::Json<UpdateUserRequest>,
+    ) -> Result<UpdateUserResponse, UpdateUserResponseError> {
+        self._update_user(db, id.to_string(), body).await
     }
 
     /// Delete a user
     ///
-    /// Update a user's details given its id and the corresponding fields to update.
+    /// Deletes a user based on the id from the database.
     #[oai(
         path = "/users/:id",
         method = "delete",
         operation_id = "delete-user",
         tag = "Tag::User"
     )]
-    async fn delete_user(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn delete_user(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<DeleteUserResponse, DeleteUserResponseError> {
+        self._delete_user(db, id.to_string()).await
     }
 
     /// Get a user's roles
