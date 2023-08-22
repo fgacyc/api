@@ -1,54 +1,44 @@
-use crate::{database::Database, error::ErrorResponse};
 use poem::web;
-use poem_openapi::{payload, Enum, Object};
+use poem_openapi::{payload, Object};
 use serde::{Deserialize, Serialize};
 
-use super::users::Address;
+use crate::{database::Database, entities, error::ErrorResponse};
 
-#[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
-pub struct Satellite {
+#[derive(Debug, Clone, Deserialize, Serialize, Object)]
+#[oai(rename = "CreateSatelliteRequest")]
+pub struct Request {
     id: String,
     no: i32,
     name: String,
-    address: Address,
-    created_at: chrono::DateTime<chrono::Utc>,
-    updated_at: chrono::DateTime<chrono::Utc>,
-}
-
-#[derive(Debug, Clone, Deserialize, Serialize, Object)]
-pub struct NewSatelliteRequest {
-    id : String,
-    no : i32,
-    name: String,
-    address: Option<Address>,
+    address: Option<entities::Address>,
 }
 
 #[derive(poem_openapi::ApiResponse)]
-pub enum NewSatelliteResponse {
+pub enum Response {
     #[oai(status = 200)]
-    Ok(payload::Json<Satellite>),
+    Ok(payload::Json<entities::Satellite>),
 }
 
 #[derive(poem_openapi::ApiResponse)]
-pub enum NewSatelliteResponseError {
+pub enum Error {
     #[oai(status = 400)]
     BadRequest(payload::Json<ErrorResponse>),
 
     #[oai(status = 404)]
     NotFound(payload::Json<ErrorResponse>),
 
-    #[oai(status = 400)]
+    #[oai(status = 500)]
     InternalServerError(payload::Json<ErrorResponse>),
 }
 
-impl super::Routes {
+impl crate::routes::Routes {
     pub async fn _create_satellite(
         &self,
         db: web::Data<&Database>,
-        body: payload::Json<NewSatelliteRequest>,
-    ) -> Result<NewSatelliteResponse, NewSatelliteResponseError> {
-        let satellite: Satellite = sqlx::query_as(
-        r#"
+        body: payload::Json<Request>,
+    ) -> Result<Response, Error> {
+        let satellite: entities::Satellite = sqlx::query_as(
+            r#"
             INSERT INTO "satellite" (
                 id,
                 no,
@@ -74,15 +64,15 @@ impl super::Routes {
                     && e.constraint()
                         .is_some_and(|constraint| constraint == "satellite_pkey") =>
             {
-                NewSatelliteResponseError::BadRequest(payload::Json(ErrorResponse {
+                Error::BadRequest(payload::Json(ErrorResponse {
                     message: format!("Satellite with id '{}' already exists", body.id),
                 }))
             }
-            _ => NewSatelliteResponseError::InternalServerError(payload::Json(
+            _ => Error::InternalServerError(payload::Json(
                 ErrorResponse::from(&e as &(dyn std::error::Error + Send + Sync)),
             )),
         })?;
 
-        Ok(NewSatelliteResponse::Ok(payload::Json(satellite)))
+        Ok(Response::Ok(payload::Json(satellite)))
     }
 }
