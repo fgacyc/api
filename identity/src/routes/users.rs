@@ -325,6 +325,108 @@ impl super::Routes {
     }
 }
 
+#[derive(Debug, Clone, Deserialize, Serialize, Object)]
+pub struct UpdateUserRequest {
+    name: String,
+    email: String,
+    email_verified: Option<bool>,
+    username: Option<String>,
+    given_name: Option<String>,
+    family_name: Option<String>,
+    gender: Option<Gender>,
+    ic_number: Option<String>,
+    phone_number: Option<String>,
+    phone_number_verified: Option<bool>,
+    nickname: Option<String>,
+    avatar_url: Option<String>,
+    address: Option<Address>,
+}
+
+// Update User
+#[derive(poem_openapi::ApiResponse)]
+pub enum UpdateUserResponse {
+    #[oai(status = 200)]
+    Ok(payload::Json<User>),
+}
+
+#[derive(poem_openapi::ApiResponse)]
+pub enum UpdateUserResponseError {
+    #[oai(status = 500)]
+    InternalServerError(payload::Json<ErrorResponse>),
+
+    #[oai(status = 400)]
+    BadRequest(payload::Json<ErrorResponse>),
+
+    #[oai(status = 404)]
+    NotFoundError(payload::Json<ErrorResponse>),
+}
+
+impl super::Routes {
+    pub async fn _update_user(
+        &self,
+        db: web::Data<&Database>,
+        id: String,
+        body: payload::Json<UpdateUserRequest>,
+    ) -> Result<UpdateUserResponse, UpdateUserResponseError> {
+        let user: User = sqlx::query_as(
+            r#"
+            UPDATE "user" SET ( 
+                    name, 
+                    email, 
+                    email_verified, 
+                    username, 
+                    given_name, 
+                    family_name, 
+                    gender, 
+                    ic_number, 
+                    phone_number, 
+                    phone_number_verified, 
+                    nickname, 
+                    avatar_url, 
+                    address 
+            ) = (
+                $1,
+                $2,
+                $3,
+                $4,
+                $5,
+                $6,
+                $7,
+                $8,
+                $9,
+                $10,
+                $11,
+                $12,
+                $13
+            ) WHERE id = $14 RETURNING *
+            "#,
+        )
+        .bind(&body.name)
+        .bind(&body.email)
+        .bind(&body.email_verified)
+        .bind(&body.username)
+        .bind(&body.given_name)
+        .bind(&body.family_name)
+        .bind(&body.gender)
+        .bind(&body.ic_number)
+        .bind(&body.phone_number)
+        .bind(&body.phone_number_verified)
+        .bind(&body.nickname)
+        .bind(&body.avatar_url)
+        .bind(&body.address)
+        .bind(&id)
+        .fetch_one(&db.db)
+        .await
+        .map_err(|e| match e {
+            _ => UpdateUserResponseError::InternalServerError(payload::Json(ErrorResponse::from(
+                &e as &(dyn std::error::Error + Send + Sync),
+            ))),
+        })?;
+
+        Ok(UpdateUserResponse::Ok(payload::Json(user)))
+    }
+}
+
 #[derive(poem_openapi::ApiResponse)]
 pub enum DeleteUserResponse {
     #[oai(status = 200)]
