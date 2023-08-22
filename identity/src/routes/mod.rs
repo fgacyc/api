@@ -3,68 +3,48 @@ use poem_openapi::{param::Path, payload, OpenApi, Tags};
 
 use crate::database::Database;
 
-use self::{
-    connect_group::{
-        CreateConnecGroupRequest, CreateConnectGroupError, CreateConnectGroupResponse,
-    },
-    users::{
-        DeleteUserResponse, DeleteUserResponseError, GetUserResponse, GetUserResponseError,
-        ListUsersResponse, ListUsersResponseError, NewUserRequest, NewUserResponse,
-        NewUserResponseError, UpdateUserRequest, UpdateUserResponse, UpdateUserResponseError,
-    },
-};
-
 mod connect_group;
-mod health;
-mod signup;
 mod users;
 
 #[derive(Tags)]
 enum Tag {
+    /// User related endpoints
     User,
+
+    /// Satellite related endpoints
     Satellite,
+
+    /// Connect group related endpoints
     ConnectGroup,
+
+    /// Ministry team related endpoints
     MinistryTeam,
+
+    /// Ministry department related endpoints
     MinistryDepartment,
+
+    /// Ministry related endpoints
     Ministry,
+
+    /// Pastoral role related endpoints
     PastoralRole,
+
+    /// Ministry role related endpoints
     MinistryRole,
-    Operational,
 }
 
 pub struct Routes {
-    auth: auth0::authentication::Api,
     management: auth0::management::Api,
 }
 
 impl Routes {
-    pub fn new(auth: auth0::authentication::Api, management: auth0::management::Api) -> Self {
-        Self { auth, management }
+    pub fn new(management: auth0::management::Api) -> Self {
+        Self { management }
     }
 }
 
 #[OpenApi]
 impl Routes {
-    #[oai(
-        path = "/health",
-        method = "get",
-        operation_id = "health",
-        tag = "Tag::Operational"
-    )]
-    async fn health(&self) -> payload::PlainText<String> {
-        self._health().await
-    }
-
-    // #[oai(path = "/signup", method = "post")]
-    // async fn signup(
-    //     &self,
-    //     db: web::Data<&crate::database::Database>,
-    //     config: web::Data<&crate::config::Config>,
-    //     body: payload::Json<signup::SignUpRequest>,
-    // ) -> Result<signup::SignUpResponse, signup::SignUpResponseError> {
-    //     self._signup(db, config, body).await
-    // }
-
     /* User */
 
     /// Create a user
@@ -80,8 +60,8 @@ impl Routes {
     async fn create_user(
         &self,
         db: web::Data<&Database>,
-        body: payload::Json<NewUserRequest>,
-    ) -> Result<NewUserResponse, NewUserResponseError> {
+        body: payload::Json<users::create::Request>,
+    ) -> Result<users::create::Response, users::create::Error> {
         self._create_user(db, body).await
     }
 
@@ -98,7 +78,7 @@ impl Routes {
     async fn list_users(
         &self,
         db: web::Data<&Database>,
-    ) -> Result<ListUsersResponse, ListUsersResponseError> {
+    ) -> Result<users::list::Response, users::list::Error> {
         self._list_users(db).await
     }
 
@@ -115,8 +95,8 @@ impl Routes {
         &self,
         db: web::Data<&Database>,
         id: Path<String>,
-    ) -> Result<GetUserResponse, GetUserResponseError> {
-        self._get_user(db, id.to_string()).await
+    ) -> Result<users::get::Response, users::get::Error> {
+        self._get_user(db, id).await
     }
 
     /// Update a user
@@ -132,9 +112,9 @@ impl Routes {
         &self,
         db: web::Data<&Database>,
         id: Path<String>,
-        body: payload::Json<UpdateUserRequest>,
-    ) -> Result<UpdateUserResponse, UpdateUserResponseError> {
-        self._update_user(db, id.to_string(), body).await
+        body: payload::Json<users::update::Request>,
+    ) -> Result<users::update::Response, users::update::Error> {
+        self._update_user(db, id, body).await
     }
 
     /// Delete a user
@@ -150,8 +130,8 @@ impl Routes {
         &self,
         db: web::Data<&Database>,
         id: Path<String>,
-    ) -> Result<DeleteUserResponse, DeleteUserResponseError> {
-        self._delete_user(db, id.to_string()).await
+    ) -> Result<users::delete::Response, users::delete::Error> {
+        self._delete_user(db, id).await
     }
 
     /// Get a user's roles
@@ -274,8 +254,8 @@ impl Routes {
     async fn create_connect_group(
         &self,
         db: web::Data<&Database>,
-        body: payload::Json<CreateConnecGroupRequest>,
-    ) -> Result<CreateConnectGroupResponse, CreateConnectGroupError> {
+        body: payload::Json<connect_group::create::Request>,
+    ) -> Result<connect_group::create::Response, connect_group::create::Error> {
         self._create_connect_group(db, body).await
     }
 
@@ -288,8 +268,11 @@ impl Routes {
         operation_id = "list-connect-groups",
         tag = "Tag::ConnectGroup"
     )]
-    async fn list_connect_groups(&self) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn list_connect_groups(
+        &self,
+        db: web::Data<&Database>,
+    ) -> Result<connect_group::list::Response, connect_group::list::Error> {
+        self._list_connect_groups(db).await
     }
 
     /// Get a connect group
@@ -301,8 +284,12 @@ impl Routes {
         operation_id = "get-connect-group",
         tag = "Tag::ConnectGroup"
     )]
-    async fn get_connect_group(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn get_connect_group(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<connect_group::get::Response, connect_group::get::Error> {
+        self._get_connect_group(db, id).await
     }
 
     /// Update a connect group
@@ -314,8 +301,13 @@ impl Routes {
         operation_id = "update-connect-group",
         tag = "Tag::ConnectGroup"
     )]
-    async fn update_connect_group(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn update_connect_group(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        body: payload::Json<connect_group::update::Request>,
+    ) -> Result<connect_group::update::Response, connect_group::update::Error> {
+        self._update_connect_group(db, id, body).await
     }
 
     /// Delete a connect group
@@ -327,8 +319,12 @@ impl Routes {
         operation_id = "delete-connect-group",
         tag = "Tag::ConnectGroup"
     )]
-    async fn delete_connect_group(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn delete_connect_group(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<connect_group::delete::Response, connect_group::delete::Error> {
+        self._delete_connect_group(db, id).await
     }
 
     /// Associate users with a connect group
