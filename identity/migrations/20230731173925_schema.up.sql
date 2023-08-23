@@ -50,7 +50,7 @@ CREATE TABLE connect_group (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   PRIMARY KEY (id),
-  UNIQUE (no, satellite_id),
+  UNIQUE (satellite_id, no, variant),
   FOREIGN KEY (satellite_id) REFERENCES satellite(id) ON UPDATE CASCADE
 );
 COMMENT ON COLUMN connect_group.id IS 'Unique identifier of a connect_group (e.g., connect_group_01H7JNPD7J67AA5AD87Q4SZDF9).';

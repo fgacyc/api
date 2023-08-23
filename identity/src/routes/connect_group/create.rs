@@ -2,35 +2,26 @@ use poem::web;
 use poem_openapi::{payload, Object};
 use serde::{Deserialize, Serialize};
 
-use crate::{database::Database, error::ErrorResponse};
+use crate::{database::Database, entities, error::ErrorResponse};
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object)]
-pub struct CreateConnecGroupRequest {
+#[oai(rename = "CreateConnectGroupRequest")]
+pub struct Request {
     name: String,
+    no: i32,
     #[oai(validator(max_length = 2))]
     variant: String,
     satellite_id: String,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
-pub struct ConnectGroup {
-    id: String,
-    no: i32,
-    name: String,
-    variant: String,
-    satellite_id: String,
-    created_at: chrono::DateTime<chrono::Utc>,
-    updated_at: chrono::DateTime<chrono::Utc>,
-}
-
 #[derive(poem_openapi::ApiResponse)]
-pub enum CreateConnectGroupResponse {
+pub enum Response {
     #[oai(status = 200)]
-    Ok(payload::Json<ConnectGroup>),
+    Ok(payload::Json<entities::ConnectGroup>),
 }
 
 #[derive(poem_openapi::ApiResponse)]
-pub enum CreateConnectGroupError {
+pub enum Error {
     #[oai(status = 400)]
     BadRequest(payload::Json<ErrorResponse>),
 
@@ -41,17 +32,18 @@ pub enum CreateConnectGroupError {
     InternalServerError(payload::Json<ErrorResponse>),
 }
 
-impl super::Routes {
+impl crate::routes::Routes {
     pub async fn _create_connect_group(
         &self,
         db: web::Data<&Database>,
-        body: payload::Json<CreateConnecGroupRequest>,
-    ) -> Result<CreateConnectGroupResponse, CreateConnectGroupError> {
-        let cg: ConnectGroup = sqlx::query_as(
+        body: payload::Json<Request>,
+    ) -> Result<Response, Error> {
+        let cg: entities::ConnectGroup = sqlx::query_as(
             r#"
             INSERT INTO connect_group (
                 id, 
                 name, 
+                no,
                 variant, 
                 satellite_id
             ) VALUES (
@@ -59,12 +51,14 @@ impl super::Routes {
                 $2,
                 $3,
                 $4,
+                $5
             ) 
             RETURNING *
             "#,
         )
         .bind(&format!("connect_group_{}", ulid::Ulid::new()))
         .bind(&body.name)
+        .bind(&body.no)
         .bind(&body.variant)
         .bind(&body.satellite_id)
         .fetch_one(&db.db)
@@ -73,21 +67,31 @@ impl super::Routes {
             sqlx::Error::Database(e)
                 if e.is_unique_violation()
                     && e.constraint().is_some_and(|constraint| {
-                        constraint == "connect_group_no_satellite_id_key"
+                        constraint == "connect_group_satellite_id_no_variant_key"
                     }) =>
             {
-                CreateConnectGroupError::BadRequest(payload::Json(ErrorResponse {
+                Error::BadRequest(payload::Json(ErrorResponse {
                     message: format!(
-                        "CG with no '{}' and satellite_id '{}' already exists",
-                        0, body.satellite_id
+                        "CG with satellite_id '{}', no '{}' and variant '{}' already exists",
+                        body.satellite_id, body.no, body.variant
                     ),
                 }))
             }
-            _ => CreateConnectGroupError::InternalServerError(payload::Json(ErrorResponse::from(
+            sqlx::Error::Database(e)
+                if e.is_foreign_key_violation()
+                    && e.constraint().is_some_and(|constraint| {
+                        constraint == "connect_group_satellite_id_fkey"
+                    }) =>
+            {
+                Error::BadRequest(payload::Json(ErrorResponse {
+                    message: format!("Satellite with id '{}' does not exists", body.satellite_id),
+                }))
+            }
+            _ => Error::InternalServerError(payload::Json(ErrorResponse::from(
                 &e as &(dyn std::error::Error + Send + Sync),
             ))),
         })?;
 
-        Ok(CreateConnectGroupResponse::Ok(payload::Json(cg)))
+        Ok(Response::Ok(payload::Json(cg)))
     }
 }
