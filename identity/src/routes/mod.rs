@@ -454,8 +454,8 @@ impl Routes {
     async fn create_ministry_role(
 		&self,
 		db: web::Data<&Database>,
-		body: payload::Json<CreateMinistryRoleRequest>,
-	) -> Result<CreateMinistryRoleResponse, CreateMinistryRoleError> {
+		body: payload::Json<ministry_role::create::Request>,
+	) -> Result<ministry_role::create::Response, ministry_role::create::Error> {
         self._create_ministry_role(db, body).await
     }
 
@@ -468,9 +468,12 @@ impl Routes {
         operation_id = "list-ministry-roles",
         tag = "Tag::MinistryRole"
     )]
-    async fn list_ministry_roles(&self) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
-    }
+    async fn list_ministry_roles(
+		&self,
+		db: web::Data<&Database>,
+	) -> Result<ministry_role::list::Response, ministry_role::list::Error> {
+		self._list_ministry_roles(db).await
+	}  
 
     /// Get a ministry role
     ///
@@ -481,8 +484,12 @@ impl Routes {
         operation_id = "get-ministry-role",
         tag = "Tag::MinistryRole"
     )]
-    async fn get_ministry_role(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn get_ministry_role(
+		&self,
+		db: web::Data<&Database>,
+		id: Path<String>,
+	) -> Result<ministry_role::get::Response, ministry_role::get::Error> {
+		self._get_ministry_role(db,id).await
     }
 
     /// Update a ministry role
@@ -494,9 +501,15 @@ impl Routes {
         operation_id = "update-ministry-role",
         tag = "Tag::MinistryRole"
     )]
-    async fn update_ministry_role(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
-    }
+    async fn update_ministry_role(
+		&self,
+		db: web::Data<&Database>,
+		id: Path<String>,
+		body: payload::Json<ministry_role::update::Request>,
+	) -> Result<ministry_role::update::Response, ministry_role::update::Error> {
+		self._update_ministry_role(db, id, body).await
+	}
+    
 
     /// Delete a ministry role
     ///
@@ -507,9 +520,13 @@ impl Routes {
         operation_id = "delete-ministry-role",
         tag = "Tag::MinistryRole"
     )]
-    async fn delete_ministry_role(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
-    }
+    async fn delete_ministry_role(
+		&self,
+		db: web::Data<&Database>,
+		id: Path<String>,
+	) -> Result<ministry_role::delete::Response, ministry_role::delete::Error> {
+		self._delete_ministry_role(db, id).await
+	}
 
     /* Ministry Team */
 

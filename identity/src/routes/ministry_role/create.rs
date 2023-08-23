@@ -2,31 +2,24 @@ use poem::web;
 use poem_openapi::{payload, Object};
 use serde::{Deserialize, Serialize};
 
-use crate::{database::Database, error::ErrorResponse};
+use crate::{database::Database, entities, error::ErrorResponse};
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object)]
-pub struct CreateMinistryRoleRequest {
+#[oai(rename = "CreateMinistryRoleRequest")]
+pub struct Request {
     name: String,
 	description: String,
 	weight: i32,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
-pub struct MinistryRole {
-    id: String,
-    name: String,
-    description: String,
-	weight: i32,
-}
-
 #[derive(poem_openapi::ApiResponse)]
-pub enum CreateMinistryRoleResponse {
+pub enum Response {
     #[oai(status = 200)]
-    Ok(payload::Json<MinistryRole>),
+    Ok(payload::Json<entities::MinistryRole>),
 }
 
 #[derive(poem_openapi::ApiResponse)]
-pub enum CreateMinistryRoleError {
+pub enum Error {
     #[oai(status = 400)]
     BadRequest(payload::Json<ErrorResponse>),
 
@@ -37,14 +30,14 @@ pub enum CreateMinistryRoleError {
     InternalServerError(payload::Json<ErrorResponse>),
 }
 
-impl super::Routes {
+impl crate::routes::Routes {
     pub async fn _create_ministry_role(
         &self,
         db: web::Data<&Database>,
-        body: payload::Json<CreateMinistryRoleRequest>,
-    ) -> Result<CreateMinistryRoleResponse, CreateMinistryRoleError> {
-        let ministry_role: MinistryRole = sqlx::query_as(
-            r#"
+        body: payload::Json<Request>,
+    ) -> Result<Response, Error> {
+        let ministry_role: entities::MinistryRole = sqlx::query_as(
+			r#"
             INSERT INTO ministry_role (
                 id, 
                 name, 
@@ -54,7 +47,7 @@ impl super::Routes {
                 $1,
                 $2,
                 $3,
-                $4,
+                $4
             ) 
             RETURNING *
             "#,
@@ -68,22 +61,20 @@ impl super::Routes {
         .map_err(|e| match e {
             sqlx::Error::Database(e)
                 if e.is_unique_violation()
-                    && e.constraint().is_some_and(|constraint| {
+                    && e.constraint().is_some_and(|constraint: &str| {
                         constraint == "ministry_role_name_key"
                     }) =>
             {
-                CreateMinistryRoleError::BadRequest(payload::Json(ErrorResponse {
+                Error::BadRequest(payload::Json(ErrorResponse {
                     message: format!(
-                        "Ministry role with name '{}' already exists",
-                        body.name
-                    ),
+                        "Ministry role with name '{}' already exists", body.name),
                 }))
             }
-            _ => CreateMinistryRoleError::InternalServerError(payload::Json(ErrorResponse::from(
-                &e as &(dyn std::error::Error + Send + Sync),
-            ))),
-        })?;
+			_ => Error::InternalServerError(payload::Json(ErrorResponse::from(
+				&e as &(dyn std::error::Error + Send + Send + Sync),
+			  ))),
+			})?;
 
-        Ok(CreateMinistryRoleResponse::Ok(payload::Json(ministry_role)))
+			Ok(Response::Ok(payload::Json(ministry_role)))
     }
 }
