@@ -24,6 +24,14 @@ pub struct User {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
+pub struct PastoralRole {
+    id: String,
+    name: String,
+    description: String,
+    weight: i32,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
 pub struct ConnectGroup {
     id: String,
     no: i32,
