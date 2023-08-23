@@ -7,7 +7,6 @@ use crate::{database::Database, entities, error::ErrorResponse};
 #[derive(Debug, Clone, Deserialize, Serialize, Object)]
 #[oai(rename = "CreateSatelliteRequest")]
 pub struct Request {
-    id: String,
     no: i32,
     name: String,
     address: Option<entities::Address>,
@@ -52,22 +51,13 @@ impl crate::routes::Routes {
             )
             "#,
         )
-        .bind(&body.id)
+        .bind(&format!("satellite_{}", ulid::Ulid::new()))
         .bind(&body.no)
         .bind(&body.name)
         .bind(&body.address)
         .fetch_one(&db.db)
         .await
         .map_err(|e| match e {
-            sqlx::Error::Database(e)
-                if e.is_unique_violation()
-                    && e.constraint()
-                        .is_some_and(|constraint| constraint == "satellite_pkey") =>
-            {
-                Error::BadRequest(payload::Json(ErrorResponse {
-                    message: format!("Satellite with id '{}' already exists", body.id),
-                }))
-            }
             _ => Error::InternalServerError(payload::Json(
                 ErrorResponse::from(&e as &(dyn std::error::Error + Send + Sync)),
             )),
