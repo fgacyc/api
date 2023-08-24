@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 #[oai(rename = "UpdateMinistryTeamRequest")]
 pub struct Request {
     name: Option<String>,
-	description: Option<String>,
+    description: Option<String>,
 }
 
 #[derive(poem_openapi::ApiResponse)]
@@ -40,7 +40,7 @@ impl crate::routes::Routes {
             r#"
             UPDATE ministry_team SET
                 name         = COALESCE($1, name),
-				description  = COALESCE($2, description)
+                description  = COALESCE($2, description)
                 updated_at   = NOW()
             WHERE id = $3
             RETURNING *

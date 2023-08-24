@@ -4,8 +4,8 @@ use poem_openapi::{param::Path, payload, OpenApi, Tags};
 use crate::database::Database;
 
 mod connect_group;
-mod users;
 mod ministry_team;
+mod users;
 
 #[derive(Tags)]
 enum Tag {
@@ -519,7 +519,7 @@ impl Routes {
         tag = "Tag::MinistryTeam"
     )]
     async fn create_ministry_team(
-		&self,
+        &self,
         db: web::Data<&Database>,
         body: payload::Json<ministry_team::create::Request>,
     ) -> Result<ministry_team::create::Response, ministry_team::create::Error> {
@@ -536,7 +536,7 @@ impl Routes {
         tag = "Tag::MinistryTeam"
     )]
     async fn list_ministry_team(
-		&self,
+        &self,
         db: web::Data<&Database>,
     ) -> Result<ministry_team::list::Response, ministry_team::list::Error> {
         self._list_ministry_team(db).await
@@ -552,7 +552,7 @@ impl Routes {
         tag = "Tag::MinistryTeam"
     )]
     async fn get_ministry_team(
-		&self,
+        &self,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<ministry_team::get::Response, ministry_team::get::Error> {
@@ -569,7 +569,7 @@ impl Routes {
         tag = "Tag::MinistryTeam"
     )]
     async fn update_ministry_team(
-		&self,
+        &self,
         db: web::Data<&Database>,
         id: Path<String>,
         body: payload::Json<ministry_team::update::Request>,
@@ -587,13 +587,12 @@ impl Routes {
         tag = "Tag::MinistryTeam"
     )]
     async fn delete_ministry_team(
-		&self,
+        &self,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<ministry_team::delete::Response, ministry_team::delete::Error> {
         self._delete_ministry_team(db, id).await
     }
-
 
     /* Ministry Departments */
 
