@@ -7,9 +7,9 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Deserialize, Serialize, Object)]
 #[oai(rename = "UpdateMinistryRoleRequest")]
 pub struct Request {
-	name: String,
-	description: String,
-	weight: i32,
+	name: Option<String>,
+	description: Option<String>,
+	weight: Option<i32>,
 }
 
 #[derive(poem_openapi::ApiResponse)]
