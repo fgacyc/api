@@ -4,8 +4,9 @@ use poem_openapi::{param::Path, payload, OpenApi, Tags};
 use crate::database::Database;
 
 mod connect_group;
-mod ministry_role;
 mod ministry;
+mod ministry_role;
+mod satellite;
 mod users;
 
 #[derive(Tags)]
@@ -186,8 +187,12 @@ impl Routes {
         operation_id = "create-satellite",
         tag = "Tag::Satellite"
     )]
-    async fn create_satellite(&self) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn create_satellite(
+        &self,
+        db: web::Data<&Database>,
+        body: payload::Json<satellite::create::Request>,
+    ) -> Result<satellite::create::Response, satellite::create::Error> {
+        self._create_satellite(db, body).await
     }
 
     /// List or search satellites
@@ -199,8 +204,11 @@ impl Routes {
         operation_id = "list-satellites",
         tag = "Tag::Satellite"
     )]
-    async fn list_satellites(&self) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn list_satellites(
+        &self,
+        db: web::Data<&Database>,
+    ) -> Result<satellite::list::Response, satellite::list::Error> {
+        self._list_satellites(db).await
     }
 
     /// Get a satellite
@@ -212,8 +220,12 @@ impl Routes {
         operation_id = "get-satellite",
         tag = "Tag::Satellite"
     )]
-    async fn get_satellite(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn get_satellite(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<satellite::get::Response, satellite::get::Error> {
+        self._get_satellite(db, id).await
     }
 
     /// Update a satellite
@@ -225,8 +237,13 @@ impl Routes {
         operation_id = "update-satellite",
         tag = "Tag::Satellite"
     )]
-    async fn update_satellite(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn update_satellite(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        body: payload::Json<satellite::update::Request>,
+    ) -> Result<satellite::update::Response, satellite::update::Error> {
+        self._update_satellite(db, id, body).await
     }
 
     /// Delete a satellite
@@ -238,8 +255,12 @@ impl Routes {
         operation_id = "delete-satellite",
         tag = "Tag::Satellite"
     )]
-    async fn delete_satellite(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn delete_satellite(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<satellite::delete::Response, satellite::delete::Error> {
+        self._delete_satellite(db, id).await
     }
 
     /* Connect Group */

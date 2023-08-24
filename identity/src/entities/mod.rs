@@ -55,6 +55,16 @@ pub struct MinistryRole {
     weight: i32,
 }
 
+#[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
+pub struct Satellite {
+    id: String,
+    no: i32,
+    name: String,
+    address: Address,
+    created_at: chrono::DateTime<chrono::Utc>,
+    updated_at: chrono::DateTime<chrono::Utc>,
+}
+
 #[derive(Debug, Copy, Clone, Deserialize, Serialize, Enum, sqlx::Type)]
 #[sqlx(type_name = "gender", rename_all = "lowercase")]
 #[serde(rename_all = "lowercase")]
