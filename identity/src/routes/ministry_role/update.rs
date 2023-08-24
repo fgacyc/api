@@ -7,9 +7,9 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Deserialize, Serialize, Object)]
 #[oai(rename = "UpdateMinistryRoleRequest")]
 pub struct Request {
-	name: Option<String>,
-	description: Option<String>,
-	weight: Option<i32>,
+    name: Option<String>,
+    description: Option<String>,
+    weight: Option<i32>,
 }
 
 #[derive(poem_openapi::ApiResponse)]
@@ -43,13 +43,13 @@ impl crate::routes::Routes {
                 name         = COALESCE($1, name),
                 description  = COALESCE($2, description),
 				weight       = COALESCE($3, weight),
-            WHERE id = $5
+            WHERE id = $4
             RETURNING *
             "#,
         )
         .bind(&body.name)
-		.bind(&body.description)
-		.bind(&body.weight)
+        .bind(&body.description)
+        .bind(&body.weight)
         .bind(&*id)
         .fetch_one(&db.db)
         .await

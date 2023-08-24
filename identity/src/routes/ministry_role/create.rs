@@ -8,8 +8,8 @@ use crate::{database::Database, entities, error::ErrorResponse};
 #[oai(rename = "CreateMinistryRoleRequest")]
 pub struct Request {
     name: String,
-	description: String,
-	weight: i32,
+    description: String,
+    weight: i32,
 }
 
 #[derive(poem_openapi::ApiResponse)]
@@ -37,7 +37,7 @@ impl crate::routes::Routes {
         body: payload::Json<Request>,
     ) -> Result<Response, Error> {
         let ministry_role: entities::MinistryRole = sqlx::query_as(
-			r#"
+            r#"
             INSERT INTO ministry_role (
                 id, 
                 name, 
@@ -61,20 +61,18 @@ impl crate::routes::Routes {
         .map_err(|e| match e {
             sqlx::Error::Database(e)
                 if e.is_unique_violation()
-                    && e.constraint().is_some_and(|constraint: &str| {
-                        constraint == "ministry_role_name_key"
-                    }) =>
+                    && e.constraint()
+                        .is_some_and(|constraint: &str| constraint == "ministry_role_name_key") =>
             {
                 Error::BadRequest(payload::Json(ErrorResponse {
-                    message: format!(
-                        "Ministry role with name '{}' already exists", body.name),
+                    message: format!("Ministry role with name '{}' already exists", body.name),
                 }))
             }
-			_ => Error::InternalServerError(payload::Json(ErrorResponse::from(
-				&e as &(dyn std::error::Error + Send + Send + Sync),
-			  ))),
-			})?;
+            _ => Error::InternalServerError(payload::Json(ErrorResponse::from(
+                &e as &(dyn std::error::Error + Send + Send + Sync),
+            ))),
+        })?;
 
-			Ok(Response::Ok(payload::Json(ministry_role)))
+        Ok(Response::Ok(payload::Json(ministry_role)))
     }
 }
