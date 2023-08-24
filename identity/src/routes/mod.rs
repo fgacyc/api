@@ -5,6 +5,7 @@ use crate::database::Database;
 
 mod connect_group;
 mod users;
+mod ministry_team;
 
 #[derive(Tags)]
 enum Tag {
@@ -517,8 +518,12 @@ impl Routes {
         operation_id = "create-ministry-team",
         tag = "Tag::MinistryTeam"
     )]
-    async fn create_ministry_team(&self) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn create_ministry_team(
+		&self,
+        db: web::Data<&Database>,
+        body: payload::Json<ministry_team::create::Request>,
+    ) -> Result<ministry_team::create::Response, ministry_team::create::Error> {
+        self._create_ministry_team(db, body).await
     }
 
     /// List or search ministry teams
@@ -530,8 +535,11 @@ impl Routes {
         operation_id = "list-ministry-team",
         tag = "Tag::MinistryTeam"
     )]
-    async fn list_ministry_team(&self) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn list_ministry_team(
+		&self,
+        db: web::Data<&Database>,
+    ) -> Result<ministry_team::list::Response, ministry_team::list::Error> {
+        self._list_ministry_team(db).await
     }
 
     /// Get a ministry team
@@ -543,8 +551,12 @@ impl Routes {
         operation_id = "get-ministry-team",
         tag = "Tag::MinistryTeam"
     )]
-    async fn get_ministry_team(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn get_ministry_team(
+		&self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<ministry_team::get::Response, ministry_team::get::Error> {
+        self._get_ministry_team(db, id).await
     }
 
     /// Update a ministry team
@@ -556,8 +568,13 @@ impl Routes {
         operation_id = "update-ministry-team",
         tag = "Tag::MinistryTeam"
     )]
-    async fn update_ministry_team(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn update_ministry_team(
+		&self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        body: payload::Json<ministry_team::update::Request>,
+    ) -> Result<ministry_team::update::Response, ministry_team::update::Error> {
+        self._update_ministry_team(db, id, body).await
     }
 
     /// Delete a ministry team
@@ -569,9 +586,14 @@ impl Routes {
         operation_id = "delete-ministry-team",
         tag = "Tag::MinistryTeam"
     )]
-    async fn delete_ministry_team(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn delete_ministry_team(
+		&self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<ministry_team::delete::Response, ministry_team::delete::Error> {
+        self._delete_ministry_team(db, id).await
     }
+
 
     /* Ministry Departments */
 
