@@ -4,8 +4,8 @@ use poem_openapi::{param::Path, payload, OpenApi, Tags};
 use crate::database::Database;
 
 mod connect_group;
-mod users;
 mod ministry_department;
+mod users;
 
 #[derive(Tags)]
 enum Tag {
@@ -586,13 +586,12 @@ impl Routes {
         tag = "Tag::MinistryDepartment"
     )]
     async fn create_ministry_department(
-		&self,
+        &self,
         db: web::Data<&Database>,
         body: payload::Json<ministry_department::create::Request>,
     ) -> Result<ministry_department::create::Response, ministry_department::create::Error> {
         self._create_ministry_department(db, body).await
     }
-
 
     /// List or search ministry departments
     ///
@@ -604,7 +603,7 @@ impl Routes {
         tag = "Tag::MinistryDepartment"
     )]
     async fn list_ministry_department(
-		&self,
+        &self,
         db: web::Data<&Database>,
     ) -> Result<ministry_department::list::Response, ministry_department::list::Error> {
         self._list_ministry_department(db).await
@@ -620,7 +619,7 @@ impl Routes {
         tag = "Tag::MinistryDepartment"
     )]
     async fn get_ministry_department(
-		&self,
+        &self,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<ministry_department::get::Response, ministry_department::get::Error> {
@@ -637,7 +636,7 @@ impl Routes {
         tag = "Tag::MinistryDepartment"
     )]
     async fn update_ministry_department(
-		&self,
+        &self,
         db: web::Data<&Database>,
         id: Path<String>,
         body: payload::Json<ministry_department::update::Request>,
@@ -654,7 +653,7 @@ impl Routes {
         tag = "Tag::MinistryDepartment"
     )]
     async fn delete_ministry_department(
-		&self,
+        &self,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<ministry_department::delete::Response, ministry_department::delete::Error> {

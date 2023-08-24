@@ -8,7 +8,7 @@ use crate::{database::Database, entities, error::ErrorResponse};
 #[oai(rename = "CreateMinistryDepartmentRequest")]
 pub struct Request {
     name: String,
-	description: String,
+    description: String,
 }
 
 #[derive(poem_openapi::ApiResponse)]
@@ -40,7 +40,7 @@ impl crate::routes::Routes {
             INSERT INTO ministry_department (
                 id, 
                 name,
-				description
+                description
             ) VALUES (
                 $1,
                 $2,
@@ -63,3 +63,4 @@ impl crate::routes::Routes {
         Ok(Response::Ok(payload::Json(ministry_department)))
     }
 }
+
