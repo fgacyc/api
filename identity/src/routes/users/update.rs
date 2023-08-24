@@ -22,6 +22,7 @@ pub struct Request {
     nickname: Option<String>,
     avatar_url: Option<String>,
     address: Option<entities::Address>,
+    date_of_birth: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(poem_openapi::ApiResponse)]
@@ -65,9 +66,9 @@ impl crate::routes::Routes {
                 nickname              = COALESCE($11, nickname),
                 avatar_url            = COALESCE($12, avatar_url),
                 address               = COALESCE($13, address),
+                date_of_birth         = COALESCE($14, date_of_birth),
                 updated_at            = NOW()
-            WHERE id = $14 
-            RETURNING *
+            WHERE id = $15 RETURNING *
             "#,
         )
         .bind(&body.name)
@@ -83,6 +84,7 @@ impl crate::routes::Routes {
         .bind(&body.nickname)
         .bind(&body.avatar_url)
         .bind(&body.address)
+        .bind(&body.date_of_birth)
         .bind(&*id)
         .fetch_one(&db.db)
         .await

@@ -19,6 +19,19 @@ pub struct User {
     nickname: Option<String>,
     avatar_url: Option<String>,
     address: Option<Address>,
+    date_of_birth: Option<chrono::DateTime<chrono::Utc>>,
+    created_at: chrono::DateTime<chrono::Utc>,
+    updated_at: chrono::DateTime<chrono::Utc>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
+pub struct Ministry {
+    id: String,
+    name: String,
+    description: String,
+    department_id: String,
+    team_id: String,
+    satellite_id: String,
     created_at: chrono::DateTime<chrono::Utc>,
     updated_at: chrono::DateTime<chrono::Utc>,
 }
