@@ -42,7 +42,7 @@ impl crate::routes::Routes {
             UPDATE connect_group SET
                 name         = COALESCE($1, name),
                 description  = COALESCE($2, description),
-				weight       = COALESCE($3, weight),
+                weight       = COALESCE($3, weight),
             WHERE id = $4
             RETURNING *
             "#,

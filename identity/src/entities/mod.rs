@@ -39,7 +39,7 @@ pub struct MinistryRole {
     id: String,
     name: String,
     description: String,
-	weight: i32,
+    weight: i32,
 }
 
 #[derive(Debug, Copy, Clone, Deserialize, Serialize, Enum, sqlx::Type)]

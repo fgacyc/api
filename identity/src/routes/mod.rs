@@ -4,8 +4,8 @@ use poem_openapi::{param::Path, payload, OpenApi, Tags};
 use crate::database::Database;
 
 mod connect_group;
-mod users;
 mod ministry_role;
+mod users;
 
 #[derive(Tags)]
 enum Tag {
@@ -452,10 +452,10 @@ impl Routes {
         tag = "Tag::MinistryRole"
     )]
     async fn create_ministry_role(
-		&self,
-		db: web::Data<&Database>,
-		body: payload::Json<ministry_role::create::Request>,
-	) -> Result<ministry_role::create::Response, ministry_role::create::Error> {
+        &self,
+        db: web::Data<&Database>,
+        body: payload::Json<ministry_role::create::Request>,
+    ) -> Result<ministry_role::create::Response, ministry_role::create::Error> {
         self._create_ministry_role(db, body).await
     }
 
@@ -469,11 +469,11 @@ impl Routes {
         tag = "Tag::MinistryRole"
     )]
     async fn list_ministry_roles(
-		&self,
-		db: web::Data<&Database>,
-	) -> Result<ministry_role::list::Response, ministry_role::list::Error> {
-		self._list_ministry_roles(db).await
-	}  
+        &self,
+        db: web::Data<&Database>,
+    ) -> Result<ministry_role::list::Response, ministry_role::list::Error> {
+        self._list_ministry_roles(db).await
+    }
 
     /// Get a ministry role
     ///
@@ -485,11 +485,11 @@ impl Routes {
         tag = "Tag::MinistryRole"
     )]
     async fn get_ministry_role(
-		&self,
-		db: web::Data<&Database>,
-		id: Path<String>,
-	) -> Result<ministry_role::get::Response, ministry_role::get::Error> {
-		self._get_ministry_role(db,id).await
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<ministry_role::get::Response, ministry_role::get::Error> {
+        self._get_ministry_role(db, id).await
     }
 
     /// Update a ministry role
@@ -502,14 +502,13 @@ impl Routes {
         tag = "Tag::MinistryRole"
     )]
     async fn update_ministry_role(
-		&self,
-		db: web::Data<&Database>,
-		id: Path<String>,
-		body: payload::Json<ministry_role::update::Request>,
-	) -> Result<ministry_role::update::Response, ministry_role::update::Error> {
-		self._update_ministry_role(db, id, body).await
-	}
-    
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        body: payload::Json<ministry_role::update::Request>,
+    ) -> Result<ministry_role::update::Response, ministry_role::update::Error> {
+        self._update_ministry_role(db, id, body).await
+    }
 
     /// Delete a ministry role
     ///
@@ -521,12 +520,12 @@ impl Routes {
         tag = "Tag::MinistryRole"
     )]
     async fn delete_ministry_role(
-		&self,
-		db: web::Data<&Database>,
-		id: Path<String>,
-	) -> Result<ministry_role::delete::Response, ministry_role::delete::Error> {
-		self._delete_ministry_role(db, id).await
-	}
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<ministry_role::delete::Response, ministry_role::delete::Error> {
+        self._delete_ministry_role(db, id).await
+    }
 
     /* Ministry Team */
 
