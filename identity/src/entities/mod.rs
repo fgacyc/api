@@ -47,6 +47,14 @@ pub struct ConnectGroup {
     updated_at: chrono::DateTime<chrono::Utc>,
 }
 
+#[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
+pub struct MinistryRole {
+    id: String,
+    name: String,
+    description: String,
+    weight: i32,
+}
+
 #[derive(Debug, Copy, Clone, Deserialize, Serialize, Enum, sqlx::Type)]
 #[sqlx(type_name = "gender", rename_all = "lowercase")]
 #[serde(rename_all = "lowercase")]
