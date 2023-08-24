@@ -128,6 +128,7 @@ CREATE TABLE "user" (
   nickname TEXT,
   avatar_url TEXT,
   address address,
+  date_of_birth TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   PRIMARY KEY (id),

@@ -4,6 +4,7 @@ use poem_openapi::{param::Path, payload, OpenApi, Tags};
 use crate::database::Database;
 
 mod connect_group;
+mod ministry;
 mod users;
 
 #[derive(Tags)]
@@ -651,8 +652,12 @@ impl Routes {
         operation_id = "create-ministry",
         tag = "Tag::Ministry"
     )]
-    async fn create_ministry(&self) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn create_ministry(
+        &self,
+        db: web::Data<&Database>,
+        body: payload::Json<ministry::create::Request>,
+    ) -> Result<ministry::create::Response, ministry::create::Error> {
+        self._create_minitry(db, body).await
     }
 
     /// List or search ministries
@@ -664,8 +669,11 @@ impl Routes {
         operation_id = "list-ministries",
         tag = "Tag::Ministry"
     )]
-    async fn list_ministries(&self) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn list_ministries(
+        &self,
+        db: web::Data<&Database>,
+    ) -> Result<ministry::list::Response, ministry::list::Error> {
+        self._list_ministries(db).await
     }
 
     /// Get a ministry
@@ -677,8 +685,12 @@ impl Routes {
         operation_id = "get-ministry",
         tag = "Tag::Ministry"
     )]
-    async fn get_ministry(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn get_ministry(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<ministry::get::Response, ministry::get::Error> {
+        self._get_ministry(db, id).await
     }
 
     /// Update a ministry
@@ -703,8 +715,12 @@ impl Routes {
         operation_id = "delete-ministry",
         tag = "Tag::Ministry"
     )]
-    async fn delete_ministry(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn delete_ministry(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<ministry::delete::Response, ministry::delete::Error> {
+        self._delete_ministry(db, id).await
     }
 
     /// Associate users with a ministry

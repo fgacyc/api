@@ -22,6 +22,7 @@ pub struct Request {
     nickname: Option<String>,
     avatar_url: Option<String>,
     address: Option<entities::Address>,
+    date_of_birth: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(poem_openapi::ApiResponse)]
@@ -62,7 +63,8 @@ impl crate::routes::Routes {
                 phone_number_verified, 
                 nickname, 
                 avatar_url, 
-                address
+                address,
+                date_of_birth
             ) VALUES (
                 $1, 
                 $2, 
@@ -78,7 +80,8 @@ impl crate::routes::Routes {
                 $12, 
                 $13, 
                 $14, 
-                $15
+                $15,
+                $16
             ) RETURNING *
             "#,
         )
@@ -97,6 +100,7 @@ impl crate::routes::Routes {
         .bind(&body.nickname)
         .bind(&body.avatar_url)
         .bind(&body.address)
+        .bind(&body.date_of_birth)
         .fetch_one(&db.db)
         .await
         .map_err(|e| match e {
