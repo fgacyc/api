@@ -5,6 +5,7 @@ use crate::database::Database;
 
 mod connect_group;
 mod ministry;
+mod ministry_department;
 mod ministry_role;
 mod ministry_team;
 mod satellite;
@@ -648,8 +649,12 @@ impl Routes {
         operation_id = "create-ministry-department",
         tag = "Tag::MinistryDepartment"
     )]
-    async fn create_ministry_department(&self) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn create_ministry_department(
+        &self,
+        db: web::Data<&Database>,
+        body: payload::Json<ministry_department::create::Request>,
+    ) -> Result<ministry_department::create::Response, ministry_department::create::Error> {
+        self._create_ministry_department(db, body).await
     }
 
     /// List or search ministry departments
@@ -661,8 +666,11 @@ impl Routes {
         operation_id = "list-ministry-department",
         tag = "Tag::MinistryDepartment"
     )]
-    async fn list_ministry_department(&self) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn list_ministry_department(
+        &self,
+        db: web::Data<&Database>,
+    ) -> Result<ministry_department::list::Response, ministry_department::list::Error> {
+        self._list_ministry_department(db).await
     }
 
     /// Get a ministry department
@@ -674,8 +682,12 @@ impl Routes {
         operation_id = "get-ministry-department",
         tag = "Tag::MinistryDepartment"
     )]
-    async fn get_ministry_department(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn get_ministry_department(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<ministry_department::get::Response, ministry_department::get::Error> {
+        self._get_ministry_department(db, id).await
     }
 
     /// Update a ministry department
@@ -687,10 +699,14 @@ impl Routes {
         operation_id = "update-ministry-department",
         tag = "Tag::MinistryDepartment"
     )]
-    async fn update_ministry_department(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn update_ministry_department(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        body: payload::Json<ministry_department::update::Request>,
+    ) -> Result<ministry_department::update::Response, ministry_department::update::Error> {
+        self._update_ministry_department(db, id, body).await
     }
-
     /// Delete a ministry department
     ///
     /// Delete a ministry department given its id.
@@ -700,8 +716,12 @@ impl Routes {
         operation_id = "delete-ministry-department",
         tag = "Tag::MinistryDepartment"
     )]
-    async fn delete_ministry_department(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn delete_ministry_department(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<ministry_department::delete::Response, ministry_department::delete::Error> {
+        self._delete_ministry_department(db, id).await
     }
 
     /* Ministry */
