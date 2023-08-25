@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use auth0::management::roles::{CreateRoleRequestParameters, Roles};
 use poem::web;
 use poem_openapi::{payload, Object};

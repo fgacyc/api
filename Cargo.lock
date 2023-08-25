@@ -700,7 +700,7 @@ dependencies = [
  "reqwest",
  "serde",
  "serde_json",
- "sqlx",
+ "sqlx 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
  "thiserror",
  "tokio",
  "tracing",
@@ -1151,7 +1151,7 @@ dependencies = [
  "reqwest",
  "serde",
  "serde_json",
- "sqlx",
+ "sqlx 0.7.1 (git+https://github.com/launchbadge/sqlx.git)",
  "thiserror",
  "tokio",
  "tracing",
@@ -2258,11 +2258,23 @@ version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8e58421b6bc416714d5115a2ca953718f6c621a51b68e4f4922aea5a4391a721"
 dependencies = [
- "sqlx-core",
- "sqlx-macros",
- "sqlx-mysql",
- "sqlx-postgres",
- "sqlx-sqlite",
+ "sqlx-core 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sqlx-macros 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sqlx-mysql 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sqlx-postgres 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sqlx-sqlite 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
+]
+
+[[package]]
+name = "sqlx"
+version = "0.7.1"
+source = "git+https://github.com/launchbadge/sqlx.git#d0fbe7feff4b3a200cf0453417d5e53bd011643a"
+dependencies = [
+ "sqlx-core 0.7.1 (git+https://github.com/launchbadge/sqlx.git)",
+ "sqlx-macros 0.7.1 (git+https://github.com/launchbadge/sqlx.git)",
+ "sqlx-mysql 0.7.1 (git+https://github.com/launchbadge/sqlx.git)",
+ "sqlx-postgres 0.7.1 (git+https://github.com/launchbadge/sqlx.git)",
+ "sqlx-sqlite 0.7.1 (git+https://github.com/launchbadge/sqlx.git)",
 ]
 
 [[package]]
@@ -2309,6 +2321,48 @@ dependencies = [
 ]
 
 [[package]]
+name = "sqlx-core"
+version = "0.7.1"
+source = "git+https://github.com/launchbadge/sqlx.git#d0fbe7feff4b3a200cf0453417d5e53bd011643a"
+dependencies = [
+ "ahash",
+ "atoi",
+ "byteorder",
+ "bytes",
+ "chrono",
+ "crc",
+ "crossbeam-queue",
+ "dotenvy",
+ "either",
+ "event-listener",
+ "futures-channel",
+ "futures-core",
+ "futures-intrusive",
+ "futures-io",
+ "futures-util",
+ "hashlink",
+ "hex",
+ "indexmap 2.0.0",
+ "log",
+ "memchr",
+ "native-tls",
+ "once_cell",
+ "paste",
+ "percent-encoding",
+ "serde",
+ "serde_json",
+ "sha2",
+ "smallvec",
+ "sqlformat",
+ "thiserror",
+ "tokio",
+ "tokio-stream",
+ "tracing",
+ "url",
+ "uuid",
+]
+
+[[package]]
 name = "sqlx-macros"
 version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2316,8 +2370,20 @@ checksum = "208e3165167afd7f3881b16c1ef3f2af69fa75980897aac8874a0696516d12c2"
 dependencies = [
  "proc-macro2",
  "quote",
- "sqlx-core",
- "sqlx-macros-core",
+ "sqlx-core 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sqlx-macros-core 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 1.0.109",
+]
+
+[[package]]
+name = "sqlx-macros"
+version = "0.7.1"
+source = "git+https://github.com/launchbadge/sqlx.git#d0fbe7feff4b3a200cf0453417d5e53bd011643a"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "sqlx-core 0.7.1 (git+https://github.com/launchbadge/sqlx.git)",
+ "sqlx-macros-core 0.7.1 (git+https://github.com/launchbadge/sqlx.git)",
  "syn 1.0.109",
 ]
 
@@ -2337,10 +2403,35 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2",
- "sqlx-core",
- "sqlx-mysql",
- "sqlx-postgres",
- "sqlx-sqlite",
+ "sqlx-core 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sqlx-mysql 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sqlx-postgres 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sqlx-sqlite 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "syn 1.0.109",
+ "tempfile",
+ "tokio",
+ "url",
+]
+
+[[package]]
+name = "sqlx-macros-core"
+version = "0.7.1"
+source = "git+https://github.com/launchbadge/sqlx.git#d0fbe7feff4b3a200cf0453417d5e53bd011643a"
+dependencies = [
+ "dotenvy",
+ "either",
+ "heck",
+ "hex",
+ "once_cell",
+ "proc-macro2",
+ "quote",
+ "serde",
+ "serde_json",
+ "sha2",
+ "sqlx-core 0.7.1 (git+https://github.com/launchbadge/sqlx.git)",
+ "sqlx-mysql 0.7.1 (git+https://github.com/launchbadge/sqlx.git)",
+ "sqlx-postgres 0.7.1 (git+https://github.com/launchbadge/sqlx.git)",
+ "sqlx-sqlite 0.7.1 (git+https://github.com/launchbadge/sqlx.git)",
  "syn 1.0.109",
  "tempfile",
  "tokio",
@@ -2383,7 +2474,50 @@ dependencies = [
  "sha1",
  "sha2",
  "smallvec",
- "sqlx-core",
+ "sqlx-core 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "stringprep",
+ "thiserror",
+ "tracing",
+ "uuid",
+ "whoami",
+]
+
+[[package]]
+name = "sqlx-mysql"
+version = "0.7.1"
+source = "git+https://github.com/launchbadge/sqlx.git#d0fbe7feff4b3a200cf0453417d5e53bd011643a"
+dependencies = [
+ "atoi",
+ "base64 0.21.2",
+ "bitflags 2.4.0",
+ "byteorder",
+ "bytes",
+ "chrono",
+ "crc",
+ "digest",
+ "dotenvy",
+ "either",
+ "futures-channel",
+ "futures-core",
+ "futures-io",
+ "futures-util",
+ "generic-array",
+ "hex",
+ "hkdf",
+ "hmac",
+ "itoa",
+ "log",
+ "md-5",
+ "memchr",
+ "once_cell",
+ "percent-encoding",
+ "rand",
+ "rsa",
+ "serde",
+ "sha1",
+ "sha2",
+ "smallvec",
+ "sqlx-core 0.7.1 (git+https://github.com/launchbadge/sqlx.git)",
  "stringprep",
  "thiserror",
  "tracing",
@@ -2424,7 +2558,47 @@ dependencies = [
  "sha1",
  "sha2",
  "smallvec",
- "sqlx-core",
+ "sqlx-core 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "stringprep",
+ "thiserror",
+ "tracing",
+ "uuid",
+ "whoami",
+]
+
+[[package]]
+name = "sqlx-postgres"
+version = "0.7.1"
+source = "git+https://github.com/launchbadge/sqlx.git#d0fbe7feff4b3a200cf0453417d5e53bd011643a"
+dependencies = [
+ "atoi",
+ "base64 0.21.2",
+ "bitflags 2.4.0",
+ "byteorder",
+ "chrono",
+ "crc",
+ "dotenvy",
+ "etcetera",
+ "futures-channel",
+ "futures-core",
+ "futures-io",
+ "futures-util",
+ "hex",
+ "hkdf",
+ "hmac",
+ "home",
+ "itoa",
+ "log",
+ "md-5",
+ "memchr",
+ "once_cell",
+ "rand",
+ "serde",
+ "serde_json",
+ "sha1",
+ "sha2",
+ "smallvec",
+ "sqlx-core 0.7.1 (git+https://github.com/launchbadge/sqlx.git)",
  "stringprep",
  "thiserror",
  "tracing",
@@ -2450,7 +2624,30 @@ dependencies = [
  "log",
  "percent-encoding",
  "serde",
- "sqlx-core",
+ "sqlx-core 0.7.1 (registry+https://github.com/rust-lang/crates.io-index)",
+ "tracing",
+ "url",
+ "uuid",
+]
+
+[[package]]
+name = "sqlx-sqlite"
+version = "0.7.1"
+source = "git+https://github.com/launchbadge/sqlx.git#d0fbe7feff4b3a200cf0453417d5e53bd011643a"
+dependencies = [
+ "atoi",
+ "chrono",
+ "flume",
+ "futures-channel",
+ "futures-core",
+ "futures-executor",
+ "futures-intrusive",
+ "futures-util",
+ "libsqlite3-sys",
+ "log",
+ "percent-encoding",
+ "serde",
+ "sqlx-core 0.7.1 (git+https://github.com/launchbadge/sqlx.git)",
  "tracing",
  "url",
  "uuid",

@@ -46,7 +46,8 @@ impl crate::routes::Routes {
         db: web::Data<&Database>,
         body: payload::Json<Request>,
     ) -> Result<Response, Error> {
-        let user: entities::User = sqlx::query_as(
+        let user = sqlx::query_as_unchecked!(
+            entities::User,
             r#"
             INSERT INTO "user" (
                 id, 
@@ -84,23 +85,23 @@ impl crate::routes::Routes {
                 $16
             ) RETURNING *
             "#,
+            &body.id,
+            &body.no,
+            &body.name,
+            &body.email,
+            &body.email_verified.unwrap_or(false),
+            &body.username,
+            &body.given_name,
+            &body.family_name,
+            &body.gender,
+            &body.ic_number,
+            &body.phone_number,
+            &body.phone_number_verified,
+            &body.nickname,
+            &body.avatar_url,
+            &body.address,
+            &body.date_of_birth,
         )
-        .bind(&body.id)
-        .bind(&body.no)
-        .bind(&body.name)
-        .bind(&body.email)
-        .bind(&body.email_verified.unwrap_or(false))
-        .bind(&body.username)
-        .bind(&body.given_name)
-        .bind(&body.family_name)
-        .bind(&body.gender)
-        .bind(&body.ic_number)
-        .bind(&body.phone_number)
-        .bind(&body.phone_number_verified)
-        .bind(&body.nickname)
-        .bind(&body.avatar_url)
-        .bind(&body.address)
-        .bind(&body.date_of_birth)
         .fetch_one(&db.db)
         .await
         .map_err(|e| match e {

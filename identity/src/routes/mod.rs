@@ -8,9 +8,9 @@ mod ministry;
 mod ministry_department;
 mod ministry_role;
 mod ministry_team;
+mod pastoral_role;
 mod satellite;
 mod users;
-mod pastoral_role;
 
 #[derive(Tags)]
 enum Tag {
@@ -140,17 +140,38 @@ impl Routes {
         self._delete_user(db, id).await
     }
 
-    /// Get a user's roles
+    /// Get a user's pastoral roles
     ///
-    /// List the roles associated with a user.
+    /// List the pastoral roles associated with a user.
     #[oai(
-        path = "/users/:id/roles",
+        path = "/users/:id/pastoral-roles",
         method = "get",
-        operation_id = "get-user-roles",
+        operation_id = "get-user-pastoral-roles",
         tag = "Tag::User"
     )]
-    async fn get_user_roles(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn get_user_pastoral_roles(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<users::get_pastoral_roles::Response, users::get_pastoral_roles::Error> {
+        self._get_user_pastoral_roles(db, id).await
+    }
+
+    /// Get a user's ministry roles
+    ///
+    /// List the ministry roles associated with a user.
+    #[oai(
+        path = "/users/:id/ministry-roles",
+        method = "get",
+        operation_id = "get-user-ministry-roles",
+        tag = "Tag::User"
+    )]
+    async fn get_user_ministry_roles(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<users::get_ministry_roles::Response, users::get_ministry_roles::Error> {
+        self._get_user_ministry_roles(db, id).await
     }
 
     /// Get a user's connect groups
@@ -162,8 +183,12 @@ impl Routes {
         operation_id = "get-user-connect-groups",
         tag = "Tag::User"
     )]
-    async fn get_user_connect_groups(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn get_user_connect_groups(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<users::get_connect_groups::Response, users::get_connect_groups::Error> {
+        self._get_user_connect_groups(db, id).await
     }
 
     /// Get a user's ministries
@@ -175,8 +200,12 @@ impl Routes {
         operation_id = "get-user-ministries",
         tag = "Tag::User"
     )]
-    async fn get_user_ministries(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn get_user_ministries(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<users::get_ministries::Response, users::get_ministries::Error> {
+        self._get_ministries(db, id).await
     }
 
     /* Satellite */
@@ -426,7 +455,7 @@ impl Routes {
         operation_id = "list-pastoral-roles",
         tag = "Tag::PastoralRole"
     )]
-    async fn list_pastoral_roles( 
+    async fn list_pastoral_roles(
         &self,
         db: web::Data<&Database>,
     ) -> Result<pastoral_role::list::Response, pastoral_role::list::Error> {
@@ -459,7 +488,7 @@ impl Routes {
         operation_id = "update-pastoral-role",
         tag = "Tag::PastoralRole"
     )]
-    async fn update_pastoral_role(  
+    async fn update_pastoral_role(
         &self,
         db: web::Data<&Database>,
         id: Path<String>,
@@ -477,7 +506,7 @@ impl Routes {
         operation_id = "delete-pastoral-role",
         tag = "Tag::PastoralRole"
     )]
-    async fn delete_pastoral_role( 
+    async fn delete_pastoral_role(
         &self,
         db: web::Data<&Database>,
         id: Path<String>,
