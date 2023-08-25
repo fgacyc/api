@@ -27,14 +27,15 @@ impl crate::routes::Routes {
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<Response, Error> {
-        let satellite: entities::Satellite = sqlx::query_as(
+        let satellite = sqlx::query_as_unchecked!(
+            entities::Satellite,
             r#"
             DELETE FROM satellite 
             WHERE id = $1::TEXT 
             RETURNING *
             "#,
+            &*id,
         )
-        .bind(&*id)
         .fetch_one(&db.db)
         .await
         .map_err(|e| match e {

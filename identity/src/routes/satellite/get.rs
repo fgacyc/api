@@ -27,24 +27,26 @@ impl crate::routes::Routes {
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<Response, Error> {
-        let satellite: entities::Satellite = sqlx::query_as(
+        let satellite = sqlx::query_as_unchecked!(
+            entities::Satellite,
             r#"
             SELECT * from "satellite"
             WHERE id = $1::TEXT
             "#,
+            &*id,
         )
-        .bind(&*id)
         .fetch_one(&db.db)
         .await
         .map_err(|e| match e {
             sqlx::error::Error::RowNotFound => Error::NotFound(payload::Json(ErrorResponse {
                 message: format!("Satellite with id '{}' not found", &*id),
             })),
-            _ => Error::InternalServerError(payload::Json(
-                ErrorResponse::from(&e as &(dyn std::error::Error + Send + Sync)),
-            )),
+            _ => Error::InternalServerError(payload::Json(ErrorResponse::from(
+                &e as &(dyn std::error::Error + Send + Sync),
+            ))),
         })?;
 
         Ok(Response::OK(payload::Json(satellite)))
     }
 }
+

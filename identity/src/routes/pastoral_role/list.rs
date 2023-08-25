@@ -20,7 +20,8 @@ pub enum Error {
 
 impl crate::routes::Routes {
     pub async fn _list_pastoral_roles(&self, db: web::Data<&Database>) -> Result<Response, Error> {
-        let prs: Vec<entities::PastoralRole> = sqlx::query_as(
+        let prs = sqlx::query_as!(
+            entities::PastoralRole,
             r#"
             SELECT * from pastoral_role
             "#,

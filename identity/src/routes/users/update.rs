@@ -50,7 +50,8 @@ impl crate::routes::Routes {
         id: Path<String>,
         body: payload::Json<Request>,
     ) -> Result<Response, Error> {
-        let user: entities::User = sqlx::query_as(
+        let user = sqlx::query_as_unchecked!(
+            entities::User,
             r#"
             UPDATE "user" SET  
                 name                  = COALESCE($1, name),
@@ -68,24 +69,25 @@ impl crate::routes::Routes {
                 address               = COALESCE($13, address),
                 date_of_birth         = COALESCE($14, date_of_birth),
                 updated_at            = NOW()
-            WHERE id = $15 RETURNING *
+            WHERE id = $15
+            RETURNING *
             "#,
+            &body.name,
+            &body.email,
+            &body.email_verified,
+            &body.username,
+            &body.given_name,
+            &body.family_name,
+            &body.gender,
+            &body.ic_number,
+            &body.phone_number,
+            &body.phone_number_verified,
+            &body.nickname,
+            &body.avatar_url,
+            &body.address,
+            &body.date_of_birth,
+            &*id,
         )
-        .bind(&body.name)
-        .bind(&body.email)
-        .bind(&body.email_verified)
-        .bind(&body.username)
-        .bind(&body.given_name)
-        .bind(&body.family_name)
-        .bind(&body.gender)
-        .bind(&body.ic_number)
-        .bind(&body.phone_number)
-        .bind(&body.phone_number_verified)
-        .bind(&body.nickname)
-        .bind(&body.avatar_url)
-        .bind(&body.address)
-        .bind(&body.date_of_birth)
-        .bind(&*id)
         .fetch_one(&db.db)
         .await
         .map_err(|e| match e {

@@ -37,21 +37,22 @@ impl crate::routes::Routes {
         id: Path<String>,
         body: payload::Json<Request>,
     ) -> Result<Response, Error> {
-        let satellite: entities::Satellite = sqlx::query_as(
+        let satellite = sqlx::query_as_unchecked!(
+            entities::Satellite,
             r#"
             UPDATE satellite SET
-                no           = COALESCE($1, no),
-                name         = COALESCE($2, name),
-                address      = COALESCE($3, address),
-                updated_at   = NOW()
+                no         = COALESCE($1, no),
+                name       = COALESCE($2, name),
+                address    = COALESCE($3, address),
+                updated_at = NOW()
             WHERE id = $4
             RETURNING *
             "#,
+            &body.no,
+            &body.name,
+            &body.address,
+            &*id,
         )
-        .bind(&body.no)
-        .bind(&body.name)
-        .bind(&body.address)
-        .bind(&*id)
         .fetch_one(&db.db)
         .await
         .map_err(|e| match e {

@@ -1,0 +1,119 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE satellite SET\n                no         = COALESCE($1, no),\n                name       = COALESCE($2, name),\n                address    = COALESCE($3, address),\n                updated_at = NOW()\n            WHERE id = $4\n            RETURNING *\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "no",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "address",
+        "type_info": {
+          "Custom": {
+            "name": "_address",
+            "kind": {
+              "Composite": [
+                [
+                  "line_one",
+                  "Text"
+                ],
+                [
+                  "line_two",
+                  "Text"
+                ],
+                [
+                  "city",
+                  "Text"
+                ],
+                [
+                  "state",
+                  "Text"
+                ],
+                [
+                  "country",
+                  "Text"
+                ],
+                [
+                  "postal_code",
+                  "Text"
+                ]
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 4,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 5,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Text",
+        {
+          "Custom": {
+            "name": "_address",
+            "kind": {
+              "Composite": [
+                [
+                  "line_one",
+                  "Text"
+                ],
+                [
+                  "line_two",
+                  "Text"
+                ],
+                [
+                  "city",
+                  "Text"
+                ],
+                [
+                  "state",
+                  "Text"
+                ],
+                [
+                  "country",
+                  "Text"
+                ],
+                [
+                  "postal_code",
+                  "Text"
+                ]
+              ]
+            }
+          }
+        },
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "c9e33bc6c370ce738aee0d047ba49667f499df7e469abbcc098635508c2c6abf"
+}

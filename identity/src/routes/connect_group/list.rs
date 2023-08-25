@@ -20,7 +20,8 @@ pub enum Error {
 
 impl crate::routes::Routes {
     pub async fn _list_connect_groups(&self, db: web::Data<&Database>) -> Result<Response, Error> {
-        let cgs: Vec<entities::ConnectGroup> = sqlx::query_as(
+        let cgs = sqlx::query_as!(
+            entities::ConnectGroup,
             r#"
             SELECT * from connect_group
             "#,

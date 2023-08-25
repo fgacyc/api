@@ -36,31 +36,33 @@ impl crate::routes::Routes {
         db: web::Data<&Database>,
         body: payload::Json<Request>,
     ) -> Result<Response, Error> {
-        let satellite: entities::Satellite = sqlx::query_as(
+        let satellite = sqlx::query_as_unchecked!(
+            entities::Satellite,
             r#"
             INSERT INTO "satellite" (
                 id,
                 no,
                 name,
                 address
-            ) VALUES(
+            ) VALUES (
                 $1,
                 $2,
                 $3,
                 $4
             )
+            RETURNING *
             "#,
+            &format!("satellite_{}", ulid::Ulid::new()),
+            &body.no,
+            &body.name,
+            &body.address,
         )
-        .bind(&format!("satellite_{}", ulid::Ulid::new()))
-        .bind(&body.no)
-        .bind(&body.name)
-        .bind(&body.address)
         .fetch_one(&db.db)
         .await
         .map_err(|e| match e {
-            _ => Error::InternalServerError(payload::Json(
-                ErrorResponse::from(&e as &(dyn std::error::Error + Send + Sync)),
-            )),
+            _ => Error::InternalServerError(payload::Json(ErrorResponse::from(
+                &e as &(dyn std::error::Error + Send + Sync),
+            ))),
         })?;
 
         Ok(Response::Ok(payload::Json(satellite)))

@@ -1,0 +1,230 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO \"user\" (\n                id, \n                no, \n                name, \n                email, \n                email_verified, \n                username, \n                given_name, \n                family_name, \n                gender, \n                ic_number, \n                phone_number, \n                phone_number_verified, \n                nickname, \n                avatar_url, \n                address,\n                date_of_birth\n            ) VALUES (\n                $1, \n                $2, \n                $3, \n                $4, \n                $5, \n                $6, \n                $7, \n                $8, \n                $9, \n                $10, \n                $11, \n                $12, \n                $13, \n                $14, \n                $15,\n                $16\n            ) \n            RETURNING *\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "no",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "email",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "email_verified",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 4,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "username",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "given_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "family_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 8,
+        "name": "gender",
+        "type_info": {
+          "Custom": {
+            "name": "gender",
+            "kind": {
+              "Enum": [
+                "male",
+                "female"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "ic_number",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 10,
+        "name": "phone_number",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 11,
+        "name": "phone_number_verified",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 12,
+        "name": "nickname",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 13,
+        "name": "avatar_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 14,
+        "name": "address",
+        "type_info": {
+          "Custom": {
+            "name": "_address",
+            "kind": {
+              "Composite": [
+                [
+                  "line_one",
+                  "Text"
+                ],
+                [
+                  "line_two",
+                  "Text"
+                ],
+                [
+                  "city",
+                  "Text"
+                ],
+                [
+                  "state",
+                  "Text"
+                ],
+                [
+                  "country",
+                  "Text"
+                ],
+                [
+                  "postal_code",
+                  "Text"
+                ]
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 15,
+        "name": "date_of_birth",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 16,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 17,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Int4",
+        "Text",
+        "Text",
+        "Bool",
+        "Text",
+        "Text",
+        "Text",
+        {
+          "Custom": {
+            "name": "gender",
+            "kind": {
+              "Enum": [
+                "male",
+                "female"
+              ]
+            }
+          }
+        },
+        "Text",
+        "Text",
+        "Bool",
+        "Text",
+        "Text",
+        {
+          "Custom": {
+            "name": "address",
+            "kind": {
+              "Domain": {
+                "Custom": {
+                  "name": "_address",
+                  "kind": {
+                    "Composite": [
+                      [
+                        "line_one",
+                        "Text"
+                      ],
+                      [
+                        "line_two",
+                        "Text"
+                      ],
+                      [
+                        "city",
+                        "Text"
+                      ],
+                      [
+                        "state",
+                        "Text"
+                      ],
+                      [
+                        "country",
+                        "Text"
+                      ],
+                      [
+                        "postal_code",
+                        "Text"
+                      ]
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "Timestamptz"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "b8d4b679916c9aed97d3660838b3c9c923b0d67d1b4f62e6c3eb49d5778f1309"
+}

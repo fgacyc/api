@@ -35,7 +35,8 @@ impl crate::routes::Routes {
         db: web::Data<&Database>,
         body: payload::Json<Request>,
     ) -> Result<Response, Error> {
-        let ministry_department: entities::MinistryDepartment = sqlx::query_as(
+        let ministry_department = sqlx::query_as!(
+            entities::MinistryDepartment,
             r#"
             INSERT INTO ministry_department (
                 id, 
@@ -44,14 +45,14 @@ impl crate::routes::Routes {
             ) VALUES (
                 $1,
                 $2,
-                $3,
+                $3
             ) 
             RETURNING *
             "#,
+            &format!("ministry_department_{}", ulid::Ulid::new()),
+            &body.name,
+            &body.description,
         )
-        .bind(&format!("ministry_department_{}", ulid::Ulid::new()))
-        .bind(&body.name)
-        .bind(&body.description)
         .fetch_one(&db.db)
         .await
         .map_err(|e| match e {
@@ -63,4 +64,3 @@ impl crate::routes::Routes {
         Ok(Response::Ok(payload::Json(ministry_department)))
     }
 }
-

@@ -71,20 +71,21 @@ impl crate::routes::Routes {
             }
         };
 
-        let pr: entities::PastoralRole = sqlx::query_as(
+        let pr = sqlx::query_as_unchecked!(
+            entities::PastoralRole,
             r#"
             UPDATE pastoral_role SET
-                name           = COALESCE($1, name),
-                description    = COALESCE($2, description),
-                weight         = COALESCE($3, weight)
+                name        = COALESCE($1, name),
+                description = COALESCE($2, description),
+                weight      = COALESCE($3, weight)
             WHERE id = $4
             RETURNING *
             "#,
+            &body.name,
+            &body.description,
+            &body.weight,
+            &*id,
         )
-        .bind(&body.name)
-        .bind(&body.description)
-        .bind(&body.weight)
-        .bind(&*id)
         .fetch_one(&mut *tx)
         .await
         .map_err(|e| match e {

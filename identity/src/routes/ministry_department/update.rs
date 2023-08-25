@@ -36,19 +36,20 @@ impl crate::routes::Routes {
         id: Path<String>,
         body: payload::Json<Request>,
     ) -> Result<Response, Error> {
-        let ministry_department: entities::MinistryDepartment = sqlx::query_as(
+        let ministry_department = sqlx::query_as_unchecked!(
+            entities::MinistryDepartment,
             r#"
             UPDATE ministry_team SET
-                name         = COALESCE($1, name),
-                description  = COALESCE($2, description),
-                updated_at   = NOW()
+                name        = COALESCE($1, name),
+                description = COALESCE($2, description),
+                updated_at  = NOW()
             WHERE id = $3
             RETURNING *
             "#,
+            &body.name,
+            &body.description,
+            &*id,
         )
-        .bind(&body.name)
-        .bind(&body.description)
-        .bind(&*id)
         .fetch_one(&db.db)
         .await
         .map_err(|e| match e {
@@ -63,3 +64,4 @@ impl crate::routes::Routes {
         Ok(Response::Ok(payload::Json(ministry_department)))
     }
 }
+

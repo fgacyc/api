@@ -27,7 +27,8 @@ impl crate::routes::Routes {
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<Response, Error> {
-        let cgs: Vec<entities::ConnectGroup> = sqlx::query_as(
+        let cgs = sqlx::query_as!(
+            entities::ConnectGroup,
             r#"
             SELECT 
                 cg.* 
@@ -36,8 +37,8 @@ impl crate::routes::Routes {
                     INNER JOIN user_connect_group ucg ON cg.id = ucg.connect_group_id
             WHERE ucg.user_id = $1::TEXT
             "#,
+            &*id
         )
-        .bind(&*id)
         .fetch_all(&db.db)
         .await
         .map_err(|e| match e {

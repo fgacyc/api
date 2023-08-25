@@ -27,12 +27,13 @@ impl crate::routes::Routes {
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<Response, Error> {
-        let pr: entities::PastoralRole = sqlx::query_as(
+        let pr = sqlx::query_as!(
+            entities::PastoralRole,
             r#"
             SELECT * from pastoral_role WHERE id = $1::TEXT
             "#,
+            &*id,
         )
-        .bind(&*id)
         .fetch_one(&db.db)
         .await
         .map_err(|e| match e {

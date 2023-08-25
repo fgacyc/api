@@ -393,9 +393,12 @@ impl Routes {
     )]
     async fn associate_users_with_connect_group(
         &self,
+        db: web::Data<&Database>,
         id: Path<String>,
-    ) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+        body: payload::Json<connect_group::associate_users::Request>,
+    ) -> Result<connect_group::associate_users::Response, connect_group::associate_users::Error>
+    {
+        self._associate_users_with_connect_group(db, id, body).await
     }
 
     /// Get connect group users
@@ -407,8 +410,12 @@ impl Routes {
         operation_id = "get-connect-group-users",
         tag = "Tag::ConnectGroup"
     )]
-    async fn get_connect_group_users(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn get_connect_group_users(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<connect_group::get_users::Response, connect_group::get_users::Error> {
+        self._get_connect_group_users(db, id).await
     }
 
     /// Remove users from a connect group
@@ -422,9 +429,11 @@ impl Routes {
     )]
     async fn remove_users_from_connect_group(
         &self,
+        db: web::Data<&Database>,
         id: Path<String>,
-    ) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+        body: payload::Json<connect_group::remove_users::Request>,
+    ) -> Result<connect_group::remove_users::Response, connect_group::remove_users::Error> {
+        self._remove_users_from_connect_group(db, id, body).await
     }
 
     /* Pastoral Roles */
@@ -835,8 +844,13 @@ impl Routes {
         operation_id = "update-ministry",
         tag = "Tag::Ministry"
     )]
-    async fn update_ministry(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn update_ministry(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        body: payload::Json<ministry::update::Request>,
+    ) -> Result<ministry::update::Response, ministry::update::Error> {
+        self._update_ministry(db, id, body).await
     }
 
     /// Delete a ministry
@@ -865,8 +879,13 @@ impl Routes {
         operation_id = "associate-users-with-ministry",
         tag = "Tag::Ministry"
     )]
-    async fn associate_users_with_ministry(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn associate_users_with_ministry(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        body: payload::Json<ministry::associate_users::Request>,
+    ) -> Result<ministry::associate_users::Response, ministry::associate_users::Error> {
+        self._associate_users_with_ministry(db, id, body).await
     }
 
     /// Get users associated with a ministry
@@ -878,8 +897,12 @@ impl Routes {
         operation_id = "get-ministry-users",
         tag = "Tag::Ministry"
     )]
-    async fn get_ministry_users(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn get_ministry_users(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<ministry::get_users::Response, ministry::get_users::Error> {
+        self._get_ministry_users(db, id).await
     }
 
     /// Remove users from a ministry
@@ -891,7 +914,12 @@ impl Routes {
         operation_id = "remove-users-from-ministry",
         tag = "Tag::Ministry"
     )]
-    async fn remove_users_from_ministry(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn remove_users_from_ministry(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        body: payload::Json<ministry::remove_users::Request>,
+    ) -> Result<ministry::remove_users::Response, ministry::remove_users::Error> {
+        self._remove_users_from_ministry(db, id, body).await
     }
 }

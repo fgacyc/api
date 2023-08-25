@@ -8,9 +8,9 @@ use serde::{Deserialize, Serialize};
 #[oai(rename = "UpdateMinistryRequest")]
 pub struct Request {
     name: Option<String>,
-    no: Option<i32>,
-    #[oai(validator(max_length = 2))]
-    variant: Option<String>,
+    description: Option<String>,
+    department_id: Option<String>,
+    team_id: Option<String>,
     satellite_id: Option<String>,
 }
 
@@ -33,40 +33,43 @@ pub enum Error {
 }
 
 impl crate::routes::Routes {
-    pub async fn _update_connect_group(
+    pub async fn _update_ministry(
         &self,
         db: web::Data<&Database>,
         id: Path<String>,
         body: payload::Json<Request>,
     ) -> Result<Response, Error> {
-        let cg: entities::Ministry = sqlx::query_as(
+        let ministry = sqlx::query_as_unchecked!(
+            entities::Ministry,
             r#"
-            UPDATE connect_group SET
-                no           = COALESCE($1, no),
-                name         = COALESCE($2, name),
-                variant      = COALESCE($3, variant),
-                satellite_id = COALESCE($4, satellite_id),
-                updated_at   = NOW()
-            WHERE id = $5
+            UPDATE ministry SET
+                name          = COALESCE($1, name),
+                description   = COALESCE($2, description),
+                department_id = COALESCE($3, department_id),
+                team_id       = COALESCE($4, team_id),
+                satellite_id  = COALESCE($5, satellite_id),
+                updated_at    = NOW()
+            WHERE id = $6
             RETURNING *
             "#,
+            &body.name,
+            &body.description,
+            &body.department_id,
+            &body.team_id,
+            &body.satellite_id,
+            &*id,
         )
-        .bind(&body.no)
-        .bind(&body.name)
-        .bind(&body.variant)
-        .bind(&body.satellite_id)
-        .bind(&*id)
         .fetch_one(&db.db)
         .await
         .map_err(|e| match e {
             sqlx::error::Error::RowNotFound => Error::NotFound(payload::Json(ErrorResponse {
-                message: format!("Connect group with id '{}' not found", &*id),
+                message: format!("Ministry with id '{}' not found", &*id),
             })),
             _ => Error::InternalServer(payload::Json(ErrorResponse::from(
                 &e as &(dyn std::error::Error + Send + Sync),
             ))),
         })?;
 
-        Ok(Response::Ok(payload::Json(cg)))
+        Ok(Response::Ok(payload::Json(ministry)))
     }
 }

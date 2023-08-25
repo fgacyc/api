@@ -71,20 +71,21 @@ impl crate::routes::Routes {
             }
         };
 
-        let ministry_role: entities::MinistryRole = sqlx::query_as(
+        let ministry_role = sqlx::query_as_unchecked!(
+            entities::MinistryRole,
             r#"
-            UPDATE connect_group SET
-                name         = COALESCE($1, name),
-                description  = COALESCE($2, description),
-                weight       = COALESCE($3, weight),
+            UPDATE ministry_role SET
+                name        = COALESCE($1, name),
+                description = COALESCE($2, description),
+                weight      = COALESCE($3, weight)
             WHERE id = $4
             RETURNING *
             "#,
+            &body.name,
+            &body.description,
+            &body.weight,
+            &*id,
         )
-        .bind(&body.name)
-        .bind(&body.description)
-        .bind(&body.weight)
-        .bind(&*id)
         .fetch_one(&mut *tx)
         .await
         .map_err(|e| match e {

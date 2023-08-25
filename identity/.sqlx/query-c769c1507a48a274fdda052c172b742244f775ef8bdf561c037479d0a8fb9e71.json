@@ -1,0 +1,62 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            UPDATE connect_group SET\n                no           = COALESCE($1, no),\n                name         = COALESCE($2, name),\n                variant      = COALESCE($3, variant),\n                satellite_id = COALESCE($4, satellite_id),\n                updated_at   = NOW()\n            WHERE id = $5\n            RETURNING *\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "no",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "variant",
+        "type_info": "Bpchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "satellite_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 6,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Int4",
+        "Text",
+        "Bpchar",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "c769c1507a48a274fdda052c172b742244f775ef8bdf561c037479d0a8fb9e71"
+}

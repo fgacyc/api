@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM \n                user_ministry um\n            WHERE \n                um.ministry_id = $1::TEXT\n                    AND um.user_id = ANY($2::TEXT[])\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "TextArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "fb82ca8b3b945bee21fc2f96c524c075e0b53fa5e1343459c31a904f623978d9"
+}

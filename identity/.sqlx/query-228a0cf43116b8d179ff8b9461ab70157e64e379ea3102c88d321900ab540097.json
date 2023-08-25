@@ -1,0 +1,15 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM \n                user_connect_group ucg\n            WHERE \n                ucg.connect_group_id = $1::TEXT\n                    AND ucg.user_id = ANY($2::TEXT[])\n            ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Text",
+        "TextArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "228a0cf43116b8d179ff8b9461ab70157e64e379ea3102c88d321900ab540097"
+}

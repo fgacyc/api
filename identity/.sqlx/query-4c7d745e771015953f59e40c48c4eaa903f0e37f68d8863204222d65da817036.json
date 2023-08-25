@@ -1,0 +1,164 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT * from \"user\"\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "no",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "email",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "email_verified",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 4,
+        "name": "name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "username",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "given_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 7,
+        "name": "family_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 8,
+        "name": "gender",
+        "type_info": {
+          "Custom": {
+            "name": "gender",
+            "kind": {
+              "Enum": [
+                "male",
+                "female"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 9,
+        "name": "ic_number",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 10,
+        "name": "phone_number",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 11,
+        "name": "phone_number_verified",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 12,
+        "name": "nickname",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 13,
+        "name": "avatar_url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 14,
+        "name": "address",
+        "type_info": {
+          "Custom": {
+            "name": "_address",
+            "kind": {
+              "Composite": [
+                [
+                  "line_one",
+                  "Text"
+                ],
+                [
+                  "line_two",
+                  "Text"
+                ],
+                [
+                  "city",
+                  "Text"
+                ],
+                [
+                  "state",
+                  "Text"
+                ],
+                [
+                  "country",
+                  "Text"
+                ],
+                [
+                  "postal_code",
+                  "Text"
+                ]
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 15,
+        "name": "date_of_birth",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 16,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 17,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": []
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "4c7d745e771015953f59e40c48c4eaa903f0e37f68d8863204222d65da817036"
+}

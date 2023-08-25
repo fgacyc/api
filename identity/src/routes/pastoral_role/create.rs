@@ -73,7 +73,8 @@ impl crate::routes::Routes {
             })))?
             .to_string();
 
-        let pr: entities::PastoralRole = sqlx::query_as(
+        let pr = sqlx::query_as!(
+            entities::PastoralRole,
             r#"
             INSERT INTO pastoral_role (
                 id, 
@@ -88,11 +89,11 @@ impl crate::routes::Routes {
             ) 
             RETURNING *
             "#,
+            &role_id,
+            &body.name,
+            &body.description,
+            &body.weight,
         )
-        .bind(&role_id)
-        .bind(&body.name)
-        .bind(&body.description)
-        .bind(&body.weight)
         .fetch_one(&mut *tx)
         .await
         .map_err(|e| match e {
