@@ -60,14 +60,15 @@ impl crate::routes::Routes {
             }
         };
 
-        let pr: entities::PastoralRole = sqlx::query_as(
+        let pr = sqlx::query_as!(
+            entities::PastoralRole,
             r#"
             DELETE FROM pastoral_role 
             WHERE id = $1::TEXT 
             RETURNING *
             "#,
+            &*id
         )
-        .bind(&*id)
         .fetch_one(&mut *tx)
         .await
         .map_err(|e| match e {

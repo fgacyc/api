@@ -39,7 +39,8 @@ impl crate::routes::Routes {
         id: Path<String>,
         body: payload::Json<Request>,
     ) -> Result<Response, Error> {
-        let cg: entities::ConnectGroup = sqlx::query_as(
+        let cg = sqlx::query_as_unchecked!(
+            entities::ConnectGroup,
             r#"
             UPDATE connect_group SET
                 no           = COALESCE($1, no),
@@ -50,12 +51,12 @@ impl crate::routes::Routes {
             WHERE id = $5
             RETURNING *
             "#,
+            &body.no,
+            &body.name,
+            &body.variant,
+            &body.satellite_id,
+            &*id,
         )
-        .bind(&body.no)
-        .bind(&body.name)
-        .bind(&body.variant)
-        .bind(&body.satellite_id)
-        .bind(&*id)
         .fetch_one(&db.db)
         .await
         .map_err(|e| match e {

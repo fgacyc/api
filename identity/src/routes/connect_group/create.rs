@@ -29,7 +29,7 @@ pub enum Error {
     NotFound(payload::Json<ErrorResponse>),
 
     #[oai(status = 500)]
-    InternalServerError(payload::Json<ErrorResponse>),
+    InternalServer(payload::Json<ErrorResponse>),
 }
 
 impl crate::routes::Routes {
@@ -38,7 +38,8 @@ impl crate::routes::Routes {
         db: web::Data<&Database>,
         body: payload::Json<Request>,
     ) -> Result<Response, Error> {
-        let cg: entities::ConnectGroup = sqlx::query_as(
+        let cg = sqlx::query_as!(
+            entities::ConnectGroup,
             r#"
             INSERT INTO connect_group (
                 id, 
@@ -55,12 +56,12 @@ impl crate::routes::Routes {
             ) 
             RETURNING *
             "#,
+            &format!("connect_group_{}", ulid::Ulid::new()),
+            &body.name,
+            &body.no,
+            &body.variant,
+            &body.satellite_id,
         )
-        .bind(&format!("connect_group_{}", ulid::Ulid::new()))
-        .bind(&body.name)
-        .bind(&body.no)
-        .bind(&body.variant)
-        .bind(&body.satellite_id)
         .fetch_one(&db.db)
         .await
         .map_err(|e| match e {
@@ -87,7 +88,7 @@ impl crate::routes::Routes {
                     message: format!("Satellite with id '{}' does not exists", body.satellite_id),
                 }))
             }
-            _ => Error::InternalServerError(payload::Json(ErrorResponse::from(
+            _ => Error::InternalServer(payload::Json(ErrorResponse::from(
                 &e as &(dyn std::error::Error + Send + Sync),
             ))),
         })?;

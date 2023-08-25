@@ -38,18 +38,18 @@ pub struct Ministry {
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
 pub struct PastoralRole {
-    id: String,
-    name: String,
-    description: String,
-    weight: i32,
+    pub id: String,
+    pub name: String,
+    pub description: String,
+    pub weight: i32,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
 pub struct ConnectGroup {
     pub id: String,
     pub no: i32,
-    pub name: String,
-    pub variant: String,
+    pub name: Option<String>,
+    pub variant: Option<String>,
     pub satellite_id: String,
     pub created_at: chrono::DateTime<chrono::Utc>,
     pub updated_at: chrono::DateTime<chrono::Utc>,

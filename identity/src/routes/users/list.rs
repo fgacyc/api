@@ -20,7 +20,8 @@ pub enum Error {
 
 impl crate::routes::Routes {
     pub async fn _list_users(&self, db: web::Data<&Database>) -> Result<Response, Error> {
-        let users: Vec<entities::User> = sqlx::query_as(
+        let users = sqlx::query_as_unchecked!(
+            entities::User,
             r#"
             SELECT * from "user"
             "#,

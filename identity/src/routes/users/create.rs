@@ -83,7 +83,8 @@ impl crate::routes::Routes {
                 $14, 
                 $15,
                 $16
-            ) RETURNING *
+            ) 
+            RETURNING *
             "#,
             &body.id,
             &body.no,

@@ -27,7 +27,8 @@ impl crate::routes::Routes {
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<Response, Error> {
-        let roles: Vec<entities::MinistryRole> = sqlx::query_as(
+        let roles = sqlx::query_as!(
+            entities::MinistryRole,
             r#"
             SELECT 
                 mr.* 
@@ -36,8 +37,8 @@ impl crate::routes::Routes {
                     INNER JOIN user_ministry um ON mr.id = um.user_role
             WHERE um.user_id = $1::TEXT
             "#,
+            &*id
         )
-        .bind(&*id)
         .fetch_all(&db.db)
         .await
         .map_err(|e| match e {

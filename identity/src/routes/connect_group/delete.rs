@@ -27,14 +27,15 @@ impl crate::routes::Routes {
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<Response, Error> {
-        let cg: entities::ConnectGroup = sqlx::query_as(
+        let cg = sqlx::query_as!(
+            entities::ConnectGroup,
             r#"
             DELETE FROM connect_group 
             WHERE id = $1::TEXT 
             RETURNING *
             "#,
+            &*id
         )
-        .bind(&*id)
         .fetch_one(&db.db)
         .await
         .map_err(|e| match e {

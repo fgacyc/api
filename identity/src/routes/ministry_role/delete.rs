@@ -60,14 +60,15 @@ impl crate::routes::Routes {
             }
         };
 
-        let ministry_role: entities::MinistryRole = sqlx::query_as(
+        let ministry_role = sqlx::query_as!(
+            entities::MinistryRole,
             r#"
             DELETE FROM ministry_role 
             WHERE id = $1::TEXT 
             RETURNING *
             "#,
+            &*id,
         )
-        .bind(&*id)
         .fetch_one(&mut *tx)
         .await
         .map_err(|e| match e {

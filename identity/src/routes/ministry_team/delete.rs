@@ -27,14 +27,15 @@ impl crate::routes::Routes {
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<Response, Error> {
-        let ministry_team: entities::MinistryTeam = sqlx::query_as(
+        let ministry_team = sqlx::query_as!(
+            entities::MinistryTeam,
             r#"
             DELETE FROM ministry_team 
             WHERE id = $1::TEXT 
             RETURNING *
             "#,
+            &*id
         )
-        .bind(&*id)
         .fetch_one(&db.db)
         .await
         .map_err(|e| match e {
@@ -49,3 +50,4 @@ impl crate::routes::Routes {
         Ok(Response::Ok(payload::Json(ministry_team)))
     }
 }
+
