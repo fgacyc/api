@@ -4,36 +4,36 @@ use sqlx::types::chrono;
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
 pub struct User {
-    id: String,
-    no: i32,
-    email: String,
-    email_verified: bool,
-    name: String,
-    username: Option<String>,
-    given_name: Option<String>,
-    family_name: Option<String>,
-    gender: Option<Gender>,
-    ic_number: Option<String>,
-    phone_number: Option<String>,
-    phone_number_verified: Option<bool>,
-    nickname: Option<String>,
-    avatar_url: Option<String>,
-    address: Option<Address>,
-    date_of_birth: Option<chrono::DateTime<chrono::Utc>>,
-    created_at: chrono::DateTime<chrono::Utc>,
-    updated_at: chrono::DateTime<chrono::Utc>,
+    pub id: String,
+    pub no: i32,
+    pub email: String,
+    pub email_verified: bool,
+    pub name: String,
+    pub username: Option<String>,
+    pub given_name: Option<String>,
+    pub family_name: Option<String>,
+    pub gender: Option<Gender>,
+    pub ic_number: Option<String>,
+    pub phone_number: Option<String>,
+    pub phone_number_verified: Option<bool>,
+    pub nickname: Option<String>,
+    pub avatar_url: Option<String>,
+    pub address: Option<Address>,
+    pub date_of_birth: Option<chrono::DateTime<chrono::Utc>>,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
 pub struct Ministry {
-    id: String,
-    name: String,
-    description: String,
-    department_id: String,
-    team_id: String,
-    satellite_id: String,
-    created_at: chrono::DateTime<chrono::Utc>,
-    updated_at: chrono::DateTime<chrono::Utc>,
+    pub id: String,
+    pub name: String,
+    pub description: String,
+    pub department_id: String,
+    pub team_id: String,
+    pub satellite_id: String,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
@@ -46,71 +46,69 @@ pub struct PastoralRole {
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
 pub struct ConnectGroup {
-    id: String,
-    no: i32,
-    name: String,
-    variant: String,
-    satellite_id: String,
-    created_at: chrono::DateTime<chrono::Utc>,
-    updated_at: chrono::DateTime<chrono::Utc>,
+    pub id: String,
+    pub no: i32,
+    pub name: String,
+    pub variant: String,
+    pub satellite_id: String,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
 pub struct MinistryRole {
-    id: String,
-    name: String,
-    description: String,
-    weight: i32,
+    pub id: String,
+    pub name: String,
+    pub description: String,
+    pub weight: i32,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
 pub struct Satellite {
-    id: String,
-    no: i32,
-    name: String,
-    address: Address,
-    created_at: chrono::DateTime<chrono::Utc>,
-    updated_at: chrono::DateTime<chrono::Utc>,
+    pub id: String,
+    pub no: i32,
+    pub name: String,
+    pub address: Address,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
 pub struct MinistryTeam {
-    id: String,
-    name: String,
-    description: String,
-    created_at: chrono::DateTime<chrono::Utc>,
-    updated_at: chrono::DateTime<chrono::Utc>,
+    pub id: String,
+    pub name: String,
+    pub description: String,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
 pub struct MinistryDepartment {
-    id: String,
-    name: String,
-    description: String,
-    created_at: chrono::DateTime<chrono::Utc>,
-    updated_at: chrono::DateTime<chrono::Utc>,
+    pub id: String,
+    pub name: String,
+    pub description: String,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Debug, Copy, Clone, Deserialize, Serialize, Enum, sqlx::Type)]
 #[sqlx(type_name = "gender", rename_all = "lowercase")]
 #[serde(rename_all = "lowercase")]
+#[oai(rename_all = "lowercase")]
 pub enum Gender {
-    #[oai(rename = "male")]
     Male,
-
-    #[oai(rename = "female")]
     Female,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object)]
 #[serde(rename_all = "lowercase")]
 pub struct Address {
-    line_one: String,
-    line_two: Option<String>,
-    city: String,
-    state: String,
-    country: String,
-    postal_code: String,
+    pub line_one: String,
+    pub line_two: Option<String>,
+    pub city: String,
+    pub state: String,
+    pub country: String,
+    pub postal_code: String,
 }
 
 impl ::sqlx::encode::Encode<'_, ::sqlx::Postgres> for Address {
