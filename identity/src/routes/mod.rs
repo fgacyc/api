@@ -10,6 +10,7 @@ mod ministry_role;
 mod ministry_team;
 mod satellite;
 mod users;
+mod pastoral_role;
 
 #[derive(Tags)]
 enum Tag {
@@ -408,8 +409,12 @@ impl Routes {
         operation_id = "create-pastoral-role",
         tag = "Tag::PastoralRole"
     )]
-    async fn create_pastoral_role(&self) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn create_pastoral_role(
+        &self,
+        db: web::Data<&Database>,
+        body: payload::Json<pastoral_role::create::Request>,
+    ) -> Result<pastoral_role::create::Response, pastoral_role::create::Error> {
+        self._create_pastoral_role(db, body).await
     }
 
     /// List or search pastoral roles
@@ -421,8 +426,11 @@ impl Routes {
         operation_id = "list-pastoral-roles",
         tag = "Tag::PastoralRole"
     )]
-    async fn list_pastoral_roles(&self) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn list_pastoral_roles( 
+        &self,
+        db: web::Data<&Database>,
+    ) -> Result<pastoral_role::list::Response, pastoral_role::list::Error> {
+        self._list_pastoral_roles(db).await
     }
 
     /// Get a pastoral role
@@ -434,8 +442,12 @@ impl Routes {
         operation_id = "get-pastoral-role",
         tag = "Tag::PastoralRole"
     )]
-    async fn get_pastoral_role(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn get_pastoral_role(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<pastoral_role::get::Response, pastoral_role::get::Error> {
+        self._get_pastoral_role(db, id).await
     }
 
     /// Update a pastoral role
@@ -447,8 +459,13 @@ impl Routes {
         operation_id = "update-pastoral-role",
         tag = "Tag::PastoralRole"
     )]
-    async fn update_pastoral_role(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn update_pastoral_role(  
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        body: payload::Json<pastoral_role::update::Request>,
+    ) -> Result<pastoral_role::update::Response, pastoral_role::update::Error> {
+        self._update_pastoral_role(db, id, body).await
     }
 
     /// Delete a pastoral role
@@ -460,8 +477,12 @@ impl Routes {
         operation_id = "delete-pastoral-role",
         tag = "Tag::PastoralRole"
     )]
-    async fn delete_pastoral_role(&self, id: Path<String>) -> payload::PlainText<String> {
-        payload::PlainText("unimplemented".to_string())
+    async fn delete_pastoral_role( 
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<pastoral_role::delete::Response, pastoral_role::delete::Error> {
+        self._delete_pastoral_role(db, id).await
     }
 
     /* Ministry Roles */
