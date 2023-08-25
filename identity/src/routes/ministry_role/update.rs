@@ -1,5 +1,7 @@
+use auth0::management::roles::{Roles, UpdateRoleRequestParameters};
 use poem::web;
 use poem_openapi::{param::Path, payload, Object};
+use reqwest::StatusCode;
 
 use crate::{database::Database, entities, error::ErrorResponse};
 use serde::{Deserialize, Serialize};
@@ -37,6 +39,38 @@ impl crate::routes::Routes {
         id: Path<String>,
         body: payload::Json<Request>,
     ) -> Result<Response, Error> {
+        let mut tx = db.db.begin().await.map_err(|e| {
+            Error::InternalServer(payload::Json(ErrorResponse::from(
+                &e as &(dyn std::error::Error + Send + Send + Sync),
+            )))
+        })?;
+
+        match self
+            .management
+            .update_role(
+                id.clone(),
+                UpdateRoleRequestParameters {
+                    name: body.name.clone(),
+                    description: body.description.clone(),
+                },
+            )
+            .send()
+            .await
+            .map_err(|e| {
+                Error::InternalServer(payload::Json(ErrorResponse::from(
+                    &e as &(dyn std::error::Error + Send + Send + Sync),
+                )))
+            })?
+            .status()
+        {
+            StatusCode::OK => {}
+            _ => {
+                return Err(Error::InternalServer(payload::Json(ErrorResponse {
+                    message: format!("Failed to update ministry role with id '{}' on Auth0", &*id),
+                })))
+            }
+        };
+
         let ministry_role: entities::MinistryRole = sqlx::query_as(
             r#"
             UPDATE connect_group SET
@@ -51,7 +85,7 @@ impl crate::routes::Routes {
         .bind(&body.description)
         .bind(&body.weight)
         .bind(&*id)
-        .fetch_one(&db.db)
+        .fetch_one(&mut *tx)
         .await
         .map_err(|e| match e {
             sqlx::error::Error::RowNotFound => Error::NotFound(payload::Json(ErrorResponse {
@@ -60,6 +94,12 @@ impl crate::routes::Routes {
             _ => Error::InternalServer(payload::Json(ErrorResponse::from(
                 &e as &(dyn std::error::Error + Send + Sync),
             ))),
+        })?;
+
+        tx.commit().await.map_err(|e| {
+            Error::InternalServer(payload::Json(ErrorResponse::from(
+                &e as &(dyn std::error::Error + Send + Send + Sync),
+            )))
         })?;
 
         Ok(Response::Ok(payload::Json(ministry_role)))
