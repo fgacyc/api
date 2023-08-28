@@ -37,8 +37,4 @@ pub struct Config {
     /// The client secret for Auth0 app.
     #[clap(long, env)]
     pub auth0_client_secret: String,
-
-    /// The name of the database connection for Auth0 app.
-    #[clap(long, env)]
-    pub auth0_connection: String,
 }
