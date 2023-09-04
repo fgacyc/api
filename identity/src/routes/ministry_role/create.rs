@@ -56,6 +56,14 @@ impl crate::routes::Routes {
                     &e as &(dyn std::error::Error + Send + Send + Sync),
                 )))
             })?
+            .error_for_status()
+            .map_err(|e| {
+                tracing::error!("Failed to create role: {}", e);
+
+                Error::InternalServer(payload::Json(ErrorResponse::from(
+                    &e as &(dyn std::error::Error + Send + Send + Sync),
+                )))
+            })?
             .json::<serde_json::Value>()
             .await
             .map_err(|e| {
