@@ -4,6 +4,7 @@ use poem_openapi::{param::Path, payload, OpenApi, Tags};
 use crate::database::Database;
 
 mod registration;
+mod price;
 
 #[derive(Tags)]
 enum Tag {
@@ -113,5 +114,82 @@ impl Routes {
         id: Path<String>,
     ) -> Result<registration::delete::Response, registration::delete::Error> {
         self._delete_registration(db, id).await
+    }
+
+	/* Price */
+
+    /// Create price
+    #[oai(
+        path = "/price",
+        method = "post",
+        operation_id = "create-price",
+        tag = "Tag::Price"
+    )]
+    async fn create_price(
+        &self,
+        db: web::Data<&Database>,
+        body: payload::Json<price::create::Request>,
+    ) -> Result<price::create::Response, price::create::Error> {
+        self._create_price(db, body).await
+    }
+
+	/// List or search price
+    #[oai(
+        path = "/price",
+        method = "get",
+        operation_id = "list-price",
+        tag = "Tag::Price"
+    )]
+    async fn list_price(
+        &self,
+        db: web::Data<&Database>,
+    ) -> Result<price::list::Response, price::list::Error> {
+        self._list_price(db).await
+    }
+
+	/// Get a price
+    #[oai(
+        path = "/price/:id",
+        method = "get",
+        operation_id = "get-price",
+        tag = "Tag::Price"
+    )]
+    async fn get_price(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<price::get::Response, price::get::Error> {
+        self._get_price(db, id).await
+    }
+
+	/// Update a price
+    #[oai(
+        path = "/price/:id",
+        method = "patch",
+        operation_id = "update-price",
+        tag = "Tag::Price"
+    )]
+    async fn update_price(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        body: payload::Json<price::update::Request>,
+    ) -> Result<price::update::Response, price::update::Error> {
+        self._update_price(db, id, body).await
+    }
+
+	/// Delete a price
+    #[oai(
+        path = "/price/:id",
+        method = "delete",
+        operation_id = "delete-price",
+        tag = "Tag::Price"
+    )]
+    async fn delete_price(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<price::delete::Response, price::delete::Error> {
+        self._delete_price(db, id).await
     }
 }

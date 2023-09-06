@@ -11,3 +11,12 @@ pub struct Registration {
     pub created_at: chrono::DateTime<chrono::Utc>,
     pub updated_at: chrono::DateTime<chrono::Utc>,
 }
+
+pub struct Price {
+	pub event_id: String,
+	pub name: String,
+	pub fee: i32,
+	pub currency_code: String,
+	pub created_at: chrono::DateTime<chrono::Utc>,
+	pub updated_at: chrono::DateTime<chrono::Utc>,
+}
