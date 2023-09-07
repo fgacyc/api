@@ -3,6 +3,7 @@ use poem_openapi::{param::Path, payload, OpenApi, Tags};
 
 use crate::database::Database;
 
+mod event;
 mod registration;
 mod price;
 mod session;
@@ -40,6 +41,158 @@ impl Routes {
 
 #[OpenApi]
 impl Routes {
+    /* Event */
+
+    /// Create event
+    #[oai(
+        path = "/event",
+        method = "post",
+        operation_id = "create-event",
+        tag = "Tag::Event"
+    )]
+    async fn create_event(
+        &self,
+        db: web::Data<&Database>,
+        body: payload::Json<event::create::Request>,
+    ) -> Result<event::create::Response, event::create::Error> {
+        self._create_event(db, body).await
+    }
+
+    /// List or search event
+    #[oai(
+        path = "/event",
+        method = "get",
+        operation_id = "list-event",
+        tag = "Tag::Event"
+    )]
+    async fn list_event(
+        &self,
+        db: web::Data<&Database>,
+    ) -> Result<event::list::Response, event::list::Error> {
+        self._list_event(db).await
+    }
+
+    /// Get a event
+    #[oai(
+        path = "/event/:id",
+        method = "get",
+        operation_id = "get-event",
+        tag = "Tag::Event"
+    )]
+    async fn get_event(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<event::get::Response, event::get::Error> {
+        self._get_event(db, id).await
+    }
+
+    /// Update a event
+    #[oai(
+        path = "/event/:id",
+        method = "patch",
+        operation_id = "update-event",
+        tag = "Tag::Event"
+    )]
+    async fn update_event(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        body: payload::Json<event::update::Request>,
+    ) -> Result<event::update::Response, event::update::Error> {
+        self._update_event(db, id, body).await
+    }
+
+    /// Delete a event
+    #[oai(
+        path = "/event/:id",
+        method = "delete",
+        operation_id = "delete-event",
+        tag = "Tag::Event"
+    )]
+    async fn delete_event(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<event::delete::Response, event::delete::Error> {
+        self._delete_event(db, id).await
+    }
+
+    /// Get event type of an event
+    #[oai(
+        path = "/event/:id",
+        method = "get",
+        operation_id = "get-event",
+        tag = "Tag::Event"
+    )]
+    async fn get_type(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<event::get_event_type::Response, event::get_event_type::Error> {
+        self._get_type(db, id).await
+    }
+
+    /// Get event registrations
+    #[oai(
+        path = "/event/:id",
+        method = "get",
+        operation_id = "get-event-registrations",
+        tag = "Tag::Event"
+    )]
+    async fn get_event_registrations(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<event::get_event_registrations::Response, event::get_event_registrations::Error> {
+        self._get_event_registrations(db, id).await
+    }
+
+    /// Get a price
+    #[oai(
+        path = "/event/:id",
+        method = "get",
+        operation_id = "get-event",
+        tag = "Tag::Event"
+    )]
+    async fn get_event_price(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<event::get_event_price::Response, event::get_event_price::Error> {
+        self._get_event_price(db, id).await
+    }
+
+    /// Get event sessions
+    #[oai(
+        path = "/event/:id",
+        method = "get",
+        operation_id = "get-event-sessions",
+        tag = "Tag::Event"
+    )]
+    async fn get_event_sessions(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<event::get_event_sessions::Response, event::get_event_sessions::Error> {
+        self._get_event_sessions(db, id).await
+    }
+
+    /// Get event session attendance
+    #[oai(
+        path = "/event/:id",
+        method = "get",
+        operation_id = "get-event-session-attendance",
+        tag = "Tag::Event"
+    )]
+    async fn get_event_session_attendance(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<event::get_event_session_attendance::Response, event::get_event_session_attendance::Error> {
+        self._get_event_session_attendance(db, id).await
+    }
+
     /* Registration */
 
     /// Create registration
@@ -269,5 +422,5 @@ impl Routes {
         id: Path<String>,
     ) -> Result<session::delete::Response, session::delete::Error> {
         self._delete_session(db, id).await
-    }
+    }	
 }

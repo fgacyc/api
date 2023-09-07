@@ -3,6 +3,16 @@ use serde::{Deserialize, Serialize};
 use sqlx::types::chrono;
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
+pub struct Event {
+    pub id: String,
+    pub name: String,
+    pub description: String,
+    pub event_type: String,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
 pub struct Registration {
     pub id: String,
     pub event_id: String,
