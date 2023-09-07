@@ -9,9 +9,9 @@ use crate::{database::Database, entities, error::ErrorResponse};
 pub struct Request {
     event_id: String,
     name: String,
-	fee: i32,
-	#[oai(validator(max_length = 3))]
-	currency_code: String,
+    fee: i32,
+    #[oai(validator(max_length = 3))]
+    currency_code: String,
 }
 
 #[derive(poem_openapi::ApiResponse)]
@@ -44,20 +44,20 @@ impl crate::routes::Routes {
             INSERT INTO price (
                 event_id, 
                 name,
-				fee,
-				currency_code
+                fee,
+                currency_code
             ) VALUES (
                 $1,
                 $2,
                 $3,
-				$4
+                $4
             ) 
             RETURNING *
             "#,
             &body.event_id,
-			&body.name,
-			&body.fee,
-			&body.currency_code,
+            &body.name,
+            &body.fee,
+            &body.currency_code,
         )
         .fetch_one(&db.db)
         .await
@@ -72,7 +72,7 @@ impl crate::routes::Routes {
                     message: format!("Event with id '{}' does not exists", body.event_id),
                 }))
             }
-			sqlx::Error::Database(e)
+            sqlx::Error::Database(e)
                 if e.is_foreign_key_violation()
                     && e.constraint().is_some_and(|constraint| {
                         constraint == "price_currency_code_fkey"

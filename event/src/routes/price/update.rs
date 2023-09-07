@@ -9,8 +9,8 @@ use serde::{Deserialize, Serialize};
 pub struct Request {
     event_id: Option<String>,
     name: Option<i32>,
-	fee: Option<i32>,
-	currency_code: Option<String>,
+    fee: Option<i32>,
+    currency_code: Option<String>,
 }
 
 #[derive(poem_openapi::ApiResponse)]
@@ -43,15 +43,15 @@ impl crate::routes::Routes {
             r#"
             UPDATE price SET
                 name             = COALESCE($1, name),
-				fee              = COALESCE($2, fee),
-				currency_code    = COALESCE($3, currency_code),
+                fee              = COALESCE($2, fee),
+                currency_code    = COALESCE($3, currency_code),
                 updated_at       = NOW()
             WHERE event_id = $4
             RETURNING *
             "#,
             &body.name,
             &body.fee,
-			&body.currency_code,
+            &body.currency_code,
             &*id,
         )
         .fetch_one(&db.db)
