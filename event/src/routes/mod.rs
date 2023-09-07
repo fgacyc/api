@@ -5,6 +5,7 @@ use crate::database::Database;
 
 mod registration;
 mod price;
+mod session;
 
 #[derive(Tags)]
 enum Tag {
@@ -116,7 +117,7 @@ impl Routes {
         self._delete_registration(db, id).await
     }
 
-	/* Price */
+    /* Price */
 
     /// Create price
     #[oai(
@@ -133,7 +134,7 @@ impl Routes {
         self._create_price(db, body).await
     }
 
-	/// List or search price
+    /// List or search price
     #[oai(
         path = "/price",
         method = "get",
@@ -147,7 +148,7 @@ impl Routes {
         self._list_price(db).await
     }
 
-	/// Get a price
+    /// Get a price
     #[oai(
         path = "/price/:id",
         method = "get",
@@ -162,7 +163,7 @@ impl Routes {
         self._get_price(db, id).await
     }
 
-	/// Update a price
+    /// Update a price
     #[oai(
         path = "/price/:id",
         method = "patch",
@@ -178,7 +179,7 @@ impl Routes {
         self._update_price(db, id, body).await
     }
 
-	/// Delete a price
+    /// Delete a price
     #[oai(
         path = "/price/:id",
         method = "delete",
@@ -191,5 +192,82 @@ impl Routes {
         id: Path<String>,
     ) -> Result<price::delete::Response, price::delete::Error> {
         self._delete_price(db, id).await
+    }
+
+    /* Session */
+
+    /// Create session
+    #[oai(
+        path = "/session",
+        method = "post",
+        operation_id = "create-session",
+        tag = "Tag::Session"
+    )]
+    async fn create_session(
+        &self,
+        db: web::Data<&Database>,
+        body: payload::Json<session::create::Request>,
+    ) -> Result<session::create::Response, session::create::Error> {
+        self._create_session(db, body).await
+    }
+
+    /// List or search session
+    #[oai(
+        path = "/session",
+        method = "get",
+        operation_id = "list-session",
+        tag = "Tag::Session"
+    )]
+    async fn list_session(
+        &self,
+        db: web::Data<&Database>,
+    ) -> Result<session::list::Response, session::list::Error> {
+        self._list_session(db).await
+    }
+
+    /// Get a session
+    #[oai(
+        path = "/session/:id",
+        method = "get",
+        operation_id = "get-session",
+        tag = "Tag::Session"
+    )]
+    async fn get_session(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<session::get::Response, session::get::Error> {
+        self._get_session(db, id).await
+    }
+
+    /// Update a session
+    #[oai(
+        path = "/session/:id",
+        method = "patch",
+        operation_id = "update-session",
+        tag = "Tag::Session"
+    )]
+    async fn update_session(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        body: payload::Json<session::update::Request>,
+    ) -> Result<session::update::Response, session::update::Error> {
+        self._update_session(db, id, body).await
+    }
+
+    /// Delete a session
+    #[oai(
+        path = "/session/:id",
+        method = "delete",
+        operation_id = "delete-session",
+        tag = "Tag::Session"
+    )]
+    async fn delete_session(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<session::delete::Response, session::delete::Error> {
+        self._delete_session(db, id).await
     }
 }
