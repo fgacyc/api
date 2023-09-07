@@ -47,13 +47,31 @@ CREATE TABLE registration (
   FOREIGN KEY(event_id) REFERENCES event(id)
 );
 
-CREATE TABLE registration_data (
+CREATE TABLE registration_form (
+  id TEXT,
   registration_id TEXT NOT NULL,
-  user_id TEXT NOT NULL,
-  -- TODO: registration data
+  description TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  PRIMARY KEY(registration_id, user_id),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY(id),
+  UNIQUE(registration_id),
   FOREIGN KEY(registration_id) REFERENCES registration(id)
+)
+
+CREATE TABLE registration_form_data (
+  id TEXT NOT NULL,
+  user_id TEXT NOT NULL, -- Do we need this? @marcustut
+  
+  -- TODO: registration data
+  input_type TEXT NOT NULL,
+  label TEXT NOT NULL,
+  description TEXT,
+  registration_form_id TEXT NOT NULL,
+
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY(id, user_id), -- is user_id the PK? @marcustut
+  FOREIGN KEY(registration_form_id) REFERENCES registration_form(id)
+ 
 );
 
 CREATE TABLE price (
