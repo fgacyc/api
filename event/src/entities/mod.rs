@@ -7,7 +7,8 @@ pub struct Event {
     pub id: String,
     pub name: String,
     pub description: String,
-    pub event_type: String,
+	#[sqlx(rename = "type")]
+    pub r#type: String,
     pub created_at: chrono::DateTime<chrono::Utc>,
     pub updated_at: chrono::DateTime<chrono::Utc>,
 }
@@ -37,12 +38,27 @@ pub struct Session {
     pub id: String,
     pub event_id: String,
     pub name: String,
-    pub description: String,
+    pub description: Option<String>,
     pub expected_attendees: i32,
     pub start_at: chrono::DateTime<chrono::Utc>,
     pub end_at: chrono::DateTime<chrono::Utc>,
-    pub actual_start_at: chrono::DateTime<chrono::Utc>,
-    pub actual_end_at: chrono::DateTime<chrono::Utc>,
+    pub actual_start_at: Option<chrono::DateTime<chrono::Utc>>,
+    pub actual_end_at: Option<chrono::DateTime<chrono::Utc>>,
     pub created_at: chrono::DateTime<chrono::Utc>,
     pub updated_at: chrono::DateTime<chrono::Utc>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
+pub struct EventType {
+	pub name: String,
+	pub created_at: chrono::DateTime<chrono::Utc>,
+	pub updated_at: chrono::DateTime<chrono::Utc>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
+pub struct Attendance {
+	pub session_id: String,
+	pub user_id: String,
+	pub created_at: chrono::DateTime<chrono::Utc>,
+	pub updated_at: chrono::DateTime<chrono::Utc>,
 }

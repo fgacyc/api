@@ -13,6 +13,8 @@ pub struct Request {
     expected_attendees: i32,
     start_at: chrono::DateTime<chrono::Utc>,
     end_at: chrono::DateTime<chrono::Utc>,
+    actual_start_at: Option<chrono::DateTime<chrono::Utc>>,
+    actual_end_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(poem_openapi::ApiResponse)]
@@ -39,7 +41,7 @@ impl crate::routes::Routes {
         db: web::Data<&Database>,
         body: payload::Json<Request>,
     ) -> Result<Response, Error> {
-        let session = sqlx::query_as!(
+        let session = sqlx::query_as_unchecked!(
             entities::Session,
             r#"
             INSERT INTO session (
@@ -65,15 +67,15 @@ impl crate::routes::Routes {
             ) 
             RETURNING *
             "#,
-            &body.id,
+            &format!("session_{}", ulid::Ulid::new()),
             &body.event_id,
             &body.name,
             &body.description,
             &body.expected_attendees,
             &body.start_at,
             &body.end_at,
-            &body.actual_end_at,
-            &actual_end_at
+            &body.actual_start_at,
+            &body.actual_end_at
         )
         .fetch_one(&db.db)
         .await

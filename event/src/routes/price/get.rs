@@ -30,7 +30,7 @@ impl crate::routes::Routes {
         let price = sqlx::query_as!(
             entities::Price,
             r#"
-            SELECT * from price WHERE id = $1::TEXT
+            SELECT * from price WHERE event_id = $1::TEXT
             "#,
             &*id
         )

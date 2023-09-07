@@ -71,8 +71,8 @@ COMMENT ON COLUMN price.event_id IS 'The corresponding identifier of the event.'
 
 CREATE TABLE "session" (
   id TEXT,
-  event_id TEXT,
-  name TEXT,
+  event_id TEXT NOT NULL,
+  name TEXT NOT NULL,
   description TEXT,
   expected_attendees INTEGER NOT NULL,
   start_at TIMESTAMPTZ NOT NULL,

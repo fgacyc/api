@@ -25,9 +25,9 @@ async fn main() -> Result<(), anyhow::Error> {
     // Set up tracing
     if std::env::var_os("RUST_LOG").is_none() {
         #[cfg(debug_assertions)]
-        std::env::set_var("RUST_LOG", "poem=debug,identity=debug,auth0=info,sqlx=info");
+        std::env::set_var("RUST_LOG", "poem=debug,event=debug,auth0=info,sqlx=info");
         #[cfg(not(debug_assertions))]
-        std::env::set_var("RUST_LOG", "poem=info,identity=info,auth0=info,sqlx=info");
+        std::env::set_var("RUST_LOG", "poem=info,event=info,auth0=info,sqlx=info");
     }
     tracing_subscriber::fmt::init();
 

@@ -31,7 +31,7 @@ impl crate::routes::Routes {
             entities::Price,
             r#"
             DELETE FROM price 
-            WHERE id = $1::TEXT 
+            WHERE event_id = $1::TEXT 
             RETURNING *
             "#,
             &*id

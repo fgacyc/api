@@ -30,7 +30,7 @@ impl crate::routes::Routes {
         let attendance = sqlx::query_as!(
             entities::Attendance,
             r#"
-            SELECT * from attendance WHERE event_id = $1::TEXT
+            SELECT * from attendance WHERE session_id = $1::TEXT
             "#,
             &*id
         )

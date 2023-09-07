@@ -118,21 +118,6 @@ impl Routes {
         self._delete_event(db, id).await
     }
 
-    /// Get event type of an event
-    #[oai(
-        path = "/event/:id",
-        method = "get",
-        operation_id = "get-event",
-        tag = "Tag::Event"
-    )]
-    async fn get_type(
-        &self,
-        db: web::Data<&Database>,
-        id: Path<String>,
-    ) -> Result<event::get_event_type::Response, event::get_event_type::Error> {
-        self._get_type(db, id).await
-    }
-
     /// Get event registrations
     #[oai(
         path = "/event/:id",
