@@ -1,7 +1,7 @@
 use poem::web;
 use poem_openapi::{param::Path, payload};
 
-use crate::{database::Database, entities, error::ErrorResponse};
+use crate::{database::Database, entities, error::ErrorResponse, auth::BearerAuth};
 
 #[derive(poem_openapi::ApiResponse)]
 pub enum Response {
@@ -21,9 +21,9 @@ pub enum Error {
 impl crate::routes::Routes {
     pub async fn _list_registration_form_field_datas(
         &self,
+        auth: BearerAuth,
         db: web::Data<&Database>,
         registration_id: Path<String>,
-        user_id: Path<String>,
     ) -> Result<Response, Error> {
         let registration_form_fields = sqlx::query_as!(
             entities::RegistrationFormFieldData,
@@ -33,7 +33,7 @@ impl crate::routes::Routes {
             WHERE registration_id = $1 AND user_id = $2
             "#,
             &*registration_id,
-            &*user_id,
+            &auth.0.id,
         )
         .fetch_all(&db.db)
         .await

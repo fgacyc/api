@@ -1,7 +1,7 @@
 use poem::web;
 use poem_openapi::{param::Path, payload, Object};
 
-use crate::{database::Database, entities, error::ErrorResponse};
+use crate::{database::Database, entities, error::ErrorResponse, auth::BearerAuth};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object)]
@@ -31,10 +31,10 @@ pub enum Error {
 impl crate::routes::Routes {
     pub async fn _update_registration_form_field_data(
         &self,
+        auth: BearerAuth,
         db: web::Data<&Database>,
         registration_id: Path<String>,
         name: Path<String>,
-        user_id: Path<String>,
         body: payload::Json<Request>,
     ) -> Result<Response, Error> {
         let registration = sqlx::query_as_unchecked!(
@@ -49,7 +49,7 @@ impl crate::routes::Routes {
             &body.data,
             &*registration_id,
             &*name,
-            &*user_id,
+            &auth.0.id,
         )
         .fetch_one(&db.db)
         .await
@@ -57,7 +57,7 @@ impl crate::routes::Routes {
             sqlx::error::Error::RowNotFound => Error::NotFound(payload::Json(ErrorResponse {
                 message: format!(
                     "Registration with id '{}', name '{}' and user id '{}' not found",
-                    &*registration_id, &*name, &*user_id
+                    &*registration_id, &*name, &auth.0.id
                 ),
             })),
             _ => Error::InternalServer(payload::Json(ErrorResponse::from(

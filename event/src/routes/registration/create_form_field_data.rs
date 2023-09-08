@@ -2,13 +2,12 @@ use poem::web;
 use poem_openapi::{param::Path, payload, Object};
 use serde::{Deserialize, Serialize};
 
-use crate::{database::Database, entities, error::ErrorResponse};
+use crate::{database::Database, entities, error::ErrorResponse, auth::BearerAuth};
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object)]
 #[oai(rename = "CreateRegistrationFormFieldDataRequest")]
 pub struct Request {
     name: String,
-    user_id: String,
     data: String,
 }
 
@@ -33,6 +32,7 @@ pub enum Error {
 impl crate::routes::Routes {
     pub async fn _create_registration_form_field_data(
         &self,
+        auth: BearerAuth,
         db: web::Data<&Database>,
         registration_id: Path<String>,
         body: payload::Json<Request>,
@@ -55,7 +55,7 @@ impl crate::routes::Routes {
             "#,
             &*registration_id,
             &body.name,
-            &body.user_id,
+            &auth.0.id,
             &body.data,
         )
         .fetch_one(&db.db)
@@ -70,7 +70,7 @@ impl crate::routes::Routes {
                 Error::BadRequest(payload::Json(ErrorResponse {
                     message: format!(
                         "Registration with id '{}', name '{}' and user id '{}' already exists",
-                        &*registration_id, body.name, body.user_id
+                        &*registration_id, body.name, &auth.0.id
                     ),
                 }))
             }

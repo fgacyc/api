@@ -1,7 +1,7 @@
 use poem::web;
 use poem_openapi::{param::Path, payload, OpenApi, Tags};
 
-use crate::database::Database;
+use crate::{database::Database, auth::BearerAuth};
 
 mod connect_group;
 mod ministry;
@@ -83,6 +83,7 @@ impl Routes {
     )]
     async fn list_users(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
     ) -> Result<users::list::Response, users::list::Error> {
         self._list_users(db).await
@@ -99,6 +100,7 @@ impl Routes {
     )]
     async fn get_user(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<users::get::Response, users::get::Error> {
@@ -116,6 +118,7 @@ impl Routes {
     )]
     async fn update_user(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
         body: payload::Json<users::update::Request>,
@@ -134,6 +137,7 @@ impl Routes {
     )]
     async fn delete_user(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<users::delete::Response, users::delete::Error> {
@@ -151,6 +155,7 @@ impl Routes {
     )]
     async fn get_user_pastoral_roles(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<users::get_pastoral_roles::Response, users::get_pastoral_roles::Error> {
@@ -168,6 +173,7 @@ impl Routes {
     )]
     async fn get_user_ministry_roles(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<users::get_ministry_roles::Response, users::get_ministry_roles::Error> {
@@ -185,6 +191,7 @@ impl Routes {
     )]
     async fn get_user_connect_groups(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<users::get_connect_groups::Response, users::get_connect_groups::Error> {
@@ -202,6 +209,7 @@ impl Routes {
     )]
     async fn get_user_ministries(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<users::get_ministries::Response, users::get_ministries::Error> {
@@ -221,6 +229,7 @@ impl Routes {
     )]
     async fn create_satellite(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         body: payload::Json<satellite::create::Request>,
     ) -> Result<satellite::create::Response, satellite::create::Error> {
@@ -238,6 +247,7 @@ impl Routes {
     )]
     async fn list_satellites(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
     ) -> Result<satellite::list::Response, satellite::list::Error> {
         self._list_satellites(db).await
@@ -254,6 +264,7 @@ impl Routes {
     )]
     async fn get_satellite(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<satellite::get::Response, satellite::get::Error> {
@@ -271,6 +282,7 @@ impl Routes {
     )]
     async fn update_satellite(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
         body: payload::Json<satellite::update::Request>,
@@ -289,6 +301,7 @@ impl Routes {
     )]
     async fn delete_satellite(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<satellite::delete::Response, satellite::delete::Error> {
@@ -308,6 +321,7 @@ impl Routes {
     )]
     async fn create_connect_group(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         body: payload::Json<connect_group::create::Request>,
     ) -> Result<connect_group::create::Response, connect_group::create::Error> {
@@ -325,6 +339,7 @@ impl Routes {
     )]
     async fn list_connect_groups(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
     ) -> Result<connect_group::list::Response, connect_group::list::Error> {
         self._list_connect_groups(db).await
@@ -341,6 +356,7 @@ impl Routes {
     )]
     async fn get_connect_group(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<connect_group::get::Response, connect_group::get::Error> {
@@ -358,6 +374,7 @@ impl Routes {
     )]
     async fn update_connect_group(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
         body: payload::Json<connect_group::update::Request>,
@@ -376,6 +393,7 @@ impl Routes {
     )]
     async fn delete_connect_group(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<connect_group::delete::Response, connect_group::delete::Error> {
@@ -393,6 +411,7 @@ impl Routes {
     )]
     async fn associate_users_with_connect_group(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
         body: payload::Json<connect_group::associate_users::Request>,
@@ -412,6 +431,7 @@ impl Routes {
     )]
     async fn get_connect_group_users(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<connect_group::get_users::Response, connect_group::get_users::Error> {
@@ -429,6 +449,7 @@ impl Routes {
     )]
     async fn remove_users_from_connect_group(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
         body: payload::Json<connect_group::remove_users::Request>,
@@ -449,6 +470,7 @@ impl Routes {
     )]
     async fn create_pastoral_role(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         body: payload::Json<pastoral_role::create::Request>,
     ) -> Result<pastoral_role::create::Response, pastoral_role::create::Error> {
@@ -466,6 +488,7 @@ impl Routes {
     )]
     async fn list_pastoral_roles(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
     ) -> Result<pastoral_role::list::Response, pastoral_role::list::Error> {
         self._list_pastoral_roles(db).await
@@ -482,6 +505,7 @@ impl Routes {
     )]
     async fn get_pastoral_role(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<pastoral_role::get::Response, pastoral_role::get::Error> {
@@ -499,6 +523,7 @@ impl Routes {
     )]
     async fn update_pastoral_role(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
         body: payload::Json<pastoral_role::update::Request>,
@@ -517,6 +542,7 @@ impl Routes {
     )]
     async fn delete_pastoral_role(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<pastoral_role::delete::Response, pastoral_role::delete::Error> {
@@ -536,6 +562,7 @@ impl Routes {
     )]
     async fn create_ministry_role(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         body: payload::Json<ministry_role::create::Request>,
     ) -> Result<ministry_role::create::Response, ministry_role::create::Error> {
@@ -553,6 +580,7 @@ impl Routes {
     )]
     async fn list_ministry_roles(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
     ) -> Result<ministry_role::list::Response, ministry_role::list::Error> {
         self._list_ministry_roles(db).await
@@ -569,6 +597,7 @@ impl Routes {
     )]
     async fn get_ministry_role(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<ministry_role::get::Response, ministry_role::get::Error> {
@@ -586,6 +615,7 @@ impl Routes {
     )]
     async fn update_ministry_role(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
         body: payload::Json<ministry_role::update::Request>,
@@ -604,6 +634,7 @@ impl Routes {
     )]
     async fn delete_ministry_role(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<ministry_role::delete::Response, ministry_role::delete::Error> {
@@ -623,6 +654,7 @@ impl Routes {
     )]
     async fn create_ministry_team(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         body: payload::Json<ministry_team::create::Request>,
     ) -> Result<ministry_team::create::Response, ministry_team::create::Error> {
@@ -640,6 +672,7 @@ impl Routes {
     )]
     async fn list_ministry_team(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
     ) -> Result<ministry_team::list::Response, ministry_team::list::Error> {
         self._list_ministry_team(db).await
@@ -656,6 +689,7 @@ impl Routes {
     )]
     async fn get_ministry_team(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<ministry_team::get::Response, ministry_team::get::Error> {
@@ -673,6 +707,7 @@ impl Routes {
     )]
     async fn update_ministry_team(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
         body: payload::Json<ministry_team::update::Request>,
@@ -691,6 +726,7 @@ impl Routes {
     )]
     async fn delete_ministry_team(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<ministry_team::delete::Response, ministry_team::delete::Error> {
@@ -710,6 +746,7 @@ impl Routes {
     )]
     async fn create_ministry_department(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         body: payload::Json<ministry_department::create::Request>,
     ) -> Result<ministry_department::create::Response, ministry_department::create::Error> {
@@ -727,6 +764,7 @@ impl Routes {
     )]
     async fn list_ministry_department(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
     ) -> Result<ministry_department::list::Response, ministry_department::list::Error> {
         self._list_ministry_department(db).await
@@ -743,6 +781,7 @@ impl Routes {
     )]
     async fn get_ministry_department(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<ministry_department::get::Response, ministry_department::get::Error> {
@@ -760,6 +799,7 @@ impl Routes {
     )]
     async fn update_ministry_department(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
         body: payload::Json<ministry_department::update::Request>,
@@ -777,6 +817,7 @@ impl Routes {
     )]
     async fn delete_ministry_department(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<ministry_department::delete::Response, ministry_department::delete::Error> {
@@ -796,6 +837,7 @@ impl Routes {
     )]
     async fn create_ministry(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         body: payload::Json<ministry::create::Request>,
     ) -> Result<ministry::create::Response, ministry::create::Error> {
@@ -813,6 +855,7 @@ impl Routes {
     )]
     async fn list_ministries(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
     ) -> Result<ministry::list::Response, ministry::list::Error> {
         self._list_ministries(db).await
@@ -829,6 +872,7 @@ impl Routes {
     )]
     async fn get_ministry(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<ministry::get::Response, ministry::get::Error> {
@@ -846,6 +890,7 @@ impl Routes {
     )]
     async fn update_ministry(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
         body: payload::Json<ministry::update::Request>,
@@ -864,6 +909,7 @@ impl Routes {
     )]
     async fn delete_ministry(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<ministry::delete::Response, ministry::delete::Error> {
@@ -881,6 +927,7 @@ impl Routes {
     )]
     async fn associate_users_with_ministry(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
         body: payload::Json<ministry::associate_users::Request>,
@@ -899,6 +946,7 @@ impl Routes {
     )]
     async fn get_ministry_users(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<ministry::get_users::Response, ministry::get_users::Error> {
@@ -916,6 +964,7 @@ impl Routes {
     )]
     async fn remove_users_from_ministry(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
         body: payload::Json<ministry::remove_users::Request>,

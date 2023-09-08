@@ -1,7 +1,7 @@
 use poem::web;
 use poem_openapi::{param::Path, payload, OpenApi, Tags};
 
-use crate::database::Database;
+use crate::{auth::BearerAuth, database::Database};
 
 mod attendance;
 mod currency;
@@ -63,6 +63,7 @@ impl Routes {
     )]
     async fn create_event(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         body: payload::Json<event::create::Request>,
     ) -> Result<event::create::Response, event::create::Error> {
@@ -78,6 +79,7 @@ impl Routes {
     )]
     async fn list_event(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
     ) -> Result<event::list::Response, event::list::Error> {
         self._list_event(db).await
@@ -92,6 +94,7 @@ impl Routes {
     )]
     async fn get_event(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<event::get::Response, event::get::Error> {
@@ -107,6 +110,7 @@ impl Routes {
     )]
     async fn update_event(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
         body: payload::Json<event::update::Request>,
@@ -123,6 +127,7 @@ impl Routes {
     )]
     async fn delete_event(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<event::delete::Response, event::delete::Error> {
@@ -138,6 +143,7 @@ impl Routes {
     )]
     async fn list_event_registration(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<event::list_registration::Response, event::list_registration::Error> {
@@ -153,6 +159,7 @@ impl Routes {
     )]
     async fn list_event_price(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<event::list_price::Response, event::list_price::Error> {
@@ -168,6 +175,7 @@ impl Routes {
     )]
     async fn list_event_session(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<event::list_session::Response, event::list_session::Error> {
@@ -183,6 +191,7 @@ impl Routes {
     )]
     async fn list_event_attendance(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<event::list_attendance::Response, event::list_attendance::Error> {
@@ -200,6 +209,7 @@ impl Routes {
     )]
     async fn create_registration(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         body: payload::Json<registration::create::Request>,
     ) -> Result<registration::create::Response, registration::create::Error> {
@@ -215,6 +225,7 @@ impl Routes {
     )]
     async fn list_registration(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
     ) -> Result<registration::list::Response, registration::list::Error> {
         self._list_registrations(db).await
@@ -229,6 +240,7 @@ impl Routes {
     )]
     async fn get_registration(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<registration::get::Response, registration::get::Error> {
@@ -244,6 +256,7 @@ impl Routes {
     )]
     async fn update_registration(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
         body: payload::Json<registration::update::Request>,
@@ -260,6 +273,7 @@ impl Routes {
     )]
     async fn delete_registration(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<registration::delete::Response, registration::delete::Error> {
@@ -275,6 +289,7 @@ impl Routes {
     )]
     async fn create_registration_form_field(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
         body: payload::Json<registration::create_form_field::Request>,
@@ -292,6 +307,7 @@ impl Routes {
     )]
     async fn list_registration_form_fields(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<registration::list_form_fields::Response, registration::list_form_fields::Error>
@@ -308,6 +324,7 @@ impl Routes {
     )]
     async fn get_registration_form_field(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
         name: Path<String>,
@@ -324,6 +341,7 @@ impl Routes {
     )]
     async fn update_registration_form_field(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
         name: Path<String>,
@@ -343,6 +361,7 @@ impl Routes {
     )]
     async fn delete_registration_form_field(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
         name: Path<String>,
@@ -360,6 +379,7 @@ impl Routes {
     )]
     async fn create_registration_form_field_data(
         &self,
+        auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
         body: payload::Json<registration::create_form_field_data::Request>,
@@ -367,89 +387,88 @@ impl Routes {
         registration::create_form_field_data::Response,
         registration::create_form_field_data::Error,
     > {
-        self._create_registration_form_field_data(db, id, body)
+        self._create_registration_form_field_data(auth, db, id, body)
             .await
     }
 
     /// List all form field datas for a registration
     #[oai(
-        path = "/registration/:id/form-field-data/:user_id",
+        path = "/registration/:id/form-field-data",
         method = "get",
         operation_id = "list-registration-form-field-datas",
         tag = "Tag::Registration"
     )]
     async fn list_registration_form_field_datas(
         &self,
+        auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
-        user_id: Path<String>,
     ) -> Result<
         registration::list_form_field_datas::Response,
         registration::list_form_field_datas::Error,
     > {
-        self._list_registration_form_field_datas(db, id, user_id)
-            .await
+        self._list_registration_form_field_datas(auth, db, id).await
     }
 
     /// Get a form field data for a registration for a user
     #[oai(
-        path = "/registration/:id/form-field-data/:name/:user_id",
+        path = "/registration/:id/form-field-data/:name",
         method = "get",
         operation_id = "get-registration-form-field-data",
         tag = "Tag::Registration"
     )]
     async fn get_registration_form_field_data(
         &self,
+        auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
         name: Path<String>,
-        user_id: Path<String>,
     ) -> Result<registration::get_form_field_data::Response, registration::get_form_field_data::Error>
     {
-        self._get_registration_form_field_data(db, id, name, user_id)
+        self._get_registration_form_field_data(auth, db, id, name)
             .await
     }
 
     /// Update a form field data for a registration for a user
     #[oai(
-        path = "/registration/:id/form-field/:name/:user_id",
+        path = "/registration/:id/form-field/:name",
         method = "patch",
         operation_id = "update-registration-form-field-data",
         tag = "Tag::Registration"
     )]
     async fn update_registration_form_field_data(
         &self,
+        auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
         name: Path<String>,
-        user_id: Path<String>,
         body: payload::Json<registration::update_form_field_data::Request>,
     ) -> Result<
         registration::update_form_field_data::Response,
         registration::update_form_field_data::Error,
     > {
-        self._update_registration_form_field_data(db, id, name, user_id, body)
+        self._update_registration_form_field_data(auth, db, id, name, body)
             .await
     }
 
     /// Delete a form field for a registration for a user
     #[oai(
-        path = "/registration/:id/form-field/:name/:user_id",
+        path = "/registration/:id/form-field/:name",
         method = "delete",
         operation_id = "delete-registration-form-field-data",
         tag = "Tag::Registration"
     )]
     async fn delete_registration_form_field_data(
         &self,
+        auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
         name: Path<String>,
-        user_id: Path<String>,
     ) -> Result<
         registration::delete_form_field_data::Response,
         registration::delete_form_field_data::Error,
     > {
-        self._delete_registration_form_field_data(db, id, name, user_id)
+        self._delete_registration_form_field_data(auth, db, id, name)
             .await
     }
 
@@ -464,6 +483,7 @@ impl Routes {
     )]
     async fn create_price(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         body: payload::Json<price::create::Request>,
     ) -> Result<price::create::Response, price::create::Error> {
@@ -479,6 +499,7 @@ impl Routes {
     )]
     async fn list_price(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
     ) -> Result<price::list::Response, price::list::Error> {
         self._list_price(db).await
@@ -493,6 +514,7 @@ impl Routes {
     )]
     async fn get_price(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<price::get::Response, price::get::Error> {
@@ -508,6 +530,7 @@ impl Routes {
     )]
     async fn update_price(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
         body: payload::Json<price::update::Request>,
@@ -524,6 +547,7 @@ impl Routes {
     )]
     async fn delete_price(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<price::delete::Response, price::delete::Error> {
@@ -541,6 +565,7 @@ impl Routes {
     )]
     async fn create_session(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         body: payload::Json<session::create::Request>,
     ) -> Result<session::create::Response, session::create::Error> {
@@ -556,6 +581,7 @@ impl Routes {
     )]
     async fn list_session(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
     ) -> Result<session::list::Response, session::list::Error> {
         self._list_session(db).await
@@ -570,6 +596,7 @@ impl Routes {
     )]
     async fn get_session(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<session::get::Response, session::get::Error> {
@@ -585,6 +612,7 @@ impl Routes {
     )]
     async fn update_session(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
         body: payload::Json<session::update::Request>,
@@ -601,6 +629,7 @@ impl Routes {
     )]
     async fn delete_session(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<session::delete::Response, session::delete::Error> {
@@ -616,6 +645,7 @@ impl Routes {
     )]
     async fn list_session_attendance(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<session::list_attendance::Response, session::list_attendance::Error> {
@@ -635,6 +665,7 @@ impl Routes {
     )]
     async fn create_attendance(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         body: payload::Json<attendance::create::Request>,
     ) -> Result<attendance::create::Response, attendance::create::Error> {
@@ -652,6 +683,7 @@ impl Routes {
     )]
     async fn list_attendance(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
     ) -> Result<attendance::list::Response, attendance::list::Error> {
         self._list_attendance(db).await
@@ -668,6 +700,7 @@ impl Routes {
     )]
     async fn get_attendance(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         body: payload::Json<attendance::get::Request>,
     ) -> Result<attendance::get::Response, attendance::get::Error> {
@@ -685,6 +718,7 @@ impl Routes {
     )]
     async fn delete_attendance(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         body: payload::Json<attendance::delete::Request>,
     ) -> Result<attendance::delete::Response, attendance::delete::Error> {
@@ -704,6 +738,7 @@ impl Routes {
     )]
     async fn create_currency(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         body: payload::Json<currency::create::Request>,
     ) -> Result<currency::create::Response, currency::create::Error> {
@@ -721,6 +756,7 @@ impl Routes {
     )]
     async fn list_currencies(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
     ) -> Result<currency::list::Response, currency::list::Error> {
         self._list_currency(db).await
@@ -737,6 +773,7 @@ impl Routes {
     )]
     async fn get_currency(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         code: Path<String>,
     ) -> Result<currency::get::Response, currency::get::Error> {
@@ -754,6 +791,7 @@ impl Routes {
     )]
     async fn update_currency(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         code: Path<String>,
         body: payload::Json<currency::update::Request>,
@@ -772,6 +810,7 @@ impl Routes {
     )]
     async fn delete_currency(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         code: Path<String>,
     ) -> Result<currency::delete::Response, currency::delete::Error> {
@@ -791,6 +830,7 @@ impl Routes {
     )]
     async fn create_event_type(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         body: payload::Json<event_type::create::Request>,
     ) -> Result<event_type::create::Response, event_type::create::Error> {
@@ -808,6 +848,7 @@ impl Routes {
     )]
     async fn list_event_types(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
     ) -> Result<event_type::list::Response, event_type::list::Error> {
         self._list_event_type(db).await
@@ -824,6 +865,7 @@ impl Routes {
     )]
     async fn get_event_type(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         name: Path<String>,
     ) -> Result<event_type::get::Response, event_type::get::Error> {
@@ -841,6 +883,7 @@ impl Routes {
     )]
     async fn update_event_type(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         name: Path<String>,
         body: payload::Json<event_type::update::Request>,
@@ -859,6 +902,7 @@ impl Routes {
     )]
     async fn delete_event_type(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         name: Path<String>,
     ) -> Result<event_type::delete::Response, event_type::delete::Error> {
@@ -878,6 +922,7 @@ impl Routes {
     )]
     async fn create_form_field_type(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         body: payload::Json<form_field_type::create::Request>,
     ) -> Result<form_field_type::create::Response, form_field_type::create::Error> {
@@ -895,6 +940,7 @@ impl Routes {
     )]
     async fn list_form_field_types(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
     ) -> Result<form_field_type::list::Response, form_field_type::list::Error> {
         self._list_form_field_type(db).await
@@ -911,6 +957,7 @@ impl Routes {
     )]
     async fn get_form_field_type(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         r#type: Path<String>,
     ) -> Result<form_field_type::get::Response, form_field_type::get::Error> {
@@ -928,6 +975,7 @@ impl Routes {
     )]
     async fn update_form_field_type(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         r#type: Path<String>,
         body: payload::Json<form_field_type::update::Request>,
@@ -946,6 +994,7 @@ impl Routes {
     )]
     async fn delete_form_field_type(
         &self,
+        _auth: BearerAuth,
         db: web::Data<&Database>,
         r#type: Path<String>,
     ) -> Result<form_field_type::delete::Response, form_field_type::delete::Error> {

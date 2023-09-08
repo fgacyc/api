@@ -15,6 +15,7 @@ mod database;
 mod entities;
 mod error;
 mod routes;
+mod auth;
 
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
