@@ -11,10 +11,10 @@ pub struct Request {
     name: Option<String>,
     description: Option<String>,
     expected_attendees: Option<i32>,
-    start_at: chrono::DateTime<chrono::Utc>,
-    end_at: chrono::DateTime<chrono::Utc>,
-    actual_start_at: chrono::DateTime<chrono::Utc>,
-    actual_end_at: chrono::DateTime<chrono::Utc>,
+    start_at: Option<chrono::DateTime<chrono::Utc>>,
+    end_at: Option<chrono::DateTime<chrono::Utc>>,
+    actual_start_at: Option<chrono::DateTime<chrono::Utc>>,
+    actual_end_at: Option<chrono::DateTime<chrono::Utc>>,
 }
 
 #[derive(poem_openapi::ApiResponse)]

@@ -42,6 +42,7 @@ impl crate::routes::Routes {
             entities::Price,
             r#"
             INSERT INTO price (
+                id,
                 event_id, 
                 name,
                 fee,
@@ -50,10 +51,12 @@ impl crate::routes::Routes {
                 $1,
                 $2,
                 $3,
-                $4
+                $4,
+                $5
             ) 
             RETURNING *
             "#,
+            &format!("price_{}", ulid::Ulid::new()),
             &body.event_id,
             &body.name,
             &body.fee,
@@ -62,6 +65,18 @@ impl crate::routes::Routes {
         .fetch_one(&db.db)
         .await
         .map_err(|e| match e {
+            sqlx::Error::Database(e)
+                if e.is_unique_violation()
+                    && e.constraint()
+                        .is_some_and(|constraint| constraint == "price_pkey") =>
+            {
+                Error::BadRequest(payload::Json(ErrorResponse {
+                    message: format!(
+                        "Price with event_id '{}' and name '{}' already exists",
+                        body.event_id, body.name
+                    ),
+                }))
+            }
             sqlx::Error::Database(e)
                 if e.is_foreign_key_violation()
                     && e.constraint()
@@ -77,7 +92,7 @@ impl crate::routes::Routes {
                         .is_some_and(|constraint| constraint == "price_currency_code_fkey") =>
             {
                 Error::BadRequest(payload::Json(ErrorResponse {
-                    message: format!("Currency Code '{}' does not exists", body.currency_code),
+                    message: format!("Currency code '{}' does not exists", body.currency_code),
                 }))
             }
             _ => Error::InternalServer(payload::Json(ErrorResponse::from(

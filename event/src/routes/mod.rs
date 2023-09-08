@@ -10,6 +10,7 @@ mod session;
 mod attendance;
 mod currency;
 mod event_type;
+mod form_field_type;
 
 #[derive(Tags)]
 enum Tag {
@@ -33,8 +34,12 @@ enum Tag {
 
     /// Attendance related endpoints
     Attendance,
+
+    /// Form related endpoints
+    Form,
 }
 
+#[allow(unused)]
 pub struct Routes {
     management: auth0::management::Api,
 }
@@ -169,21 +174,20 @@ impl Routes {
         self._list_event_session(db, id).await
     }
 
-    /// List an event session's attendance
+    /// List an event's attendance
     #[oai(
-        path = "/event/:event_id/session/:session_id/attendance",
+        path = "/event/:id/attendance",
         method = "get",
-        operation_id = "list-event-session-attendance",
+        operation_id = "list-event-attendance",
         tag = "Tag::Event"
     )]
-    async fn list_event_session_attendance(
+    async fn list_event_attendance(
         &self,
         db: web::Data<&Database>,
-        #[oai(name = "event_id")] _event_id: Path<String>,
-        session_id: Path<String>,
-    ) -> Result<event::list_session_attendance::Response, event::list_session_attendance::Error>
+        id: Path<String>,
+    ) -> Result<event::list_attendance::Response, event::list_attendance::Error>
     {
-        self._list_event_session_attendance(db, session_id).await
+        self._list_event_attendance(db, id).await
     }
 
     /* Registration */
@@ -417,6 +421,22 @@ impl Routes {
         self._delete_session(db, id).await
     }
 
+    /// List a session's attendance
+    #[oai(
+        path = "/session/:id/attendance",
+        method = "get",
+        operation_id = "list-session-attendance",
+        tag = "Tag::Session"
+    )]
+    async fn list_session_attendance(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<session::list_attendance::Response, session::list_attendance::Error>
+    {
+        self._list_session_attendance(db, id).await
+    }
+
     /* Atendance */
 
     /// Create a attendance
@@ -525,7 +545,7 @@ impl Routes {
     ///
     /// Retrieve a currency's details given its code.
     #[oai(
-        path = "/currency/:id",
+        path = "/currency/:code",
         method = "get",
         operation_id = "get-currency",
         tag = "Tag::Currency"
@@ -533,16 +553,16 @@ impl Routes {
     async fn get_currency(
         &self,
         db: web::Data<&Database>,
-        id: Path<String>,
+        code: Path<String>,
     ) -> Result<currency::get::Response, currency::get::Error> {
-        self._get_currency(db, id).await
+        self._get_currency(db, code).await
     }
 
     /// Update a currency
     ///
     /// Update a currency's details given its code and the corresponding fields to update.
     #[oai(
-        path = "/currency/:id",
+        path = "/currency/:code",
         method = "patch",
         operation_id = "update-currency",
         tag = "Tag::Currency"
@@ -550,17 +570,17 @@ impl Routes {
     async fn update_currency(
         &self,
         db: web::Data<&Database>,
-        id: Path<String>,
+        code: Path<String>,
         body: payload::Json<currency::update::Request>,
     ) -> Result<currency::update::Response, currency::update::Error> {
-        self._update_currency(db, id, body).await
+        self._update_currency(db, code, body).await
     }
 
     /// Delete a currency
     ///
     /// Delete a currency given its code.
     #[oai(
-        path = "/currency/:id",
+        path = "/currency/:code",
         method = "delete",
         operation_id = "delete-currency",
         tag = "Tag::Currency"
@@ -568,9 +588,9 @@ impl Routes {
     async fn delete_currency(
         &self,
         db: web::Data<&Database>,
-        id: Path<String>,
+        code: Path<String>,
     ) -> Result<currency::delete::Response, currency::delete::Error> {
-        self._delete_currency(db, id).await
+        self._delete_currency(db, code).await
     }
 
     /* Event Type */
@@ -612,7 +632,7 @@ impl Routes {
     ///
     /// Retrieve a event_type's details given its name.
     #[oai(
-        path = "/event-type/:id",
+        path = "/event-type/:name",
         method = "get",
         operation_id = "get-event-type",
         tag = "Tag::EventType"
@@ -620,16 +640,16 @@ impl Routes {
     async fn get_event_type(
         &self,
         db: web::Data<&Database>,
-        id: Path<String>,
+        name: Path<String>,
     ) -> Result<event_type::get::Response, event_type::get::Error> {
-        self._get_event_type(db, id).await
+        self._get_event_type(db, name).await
     }
 
     /// Update a event_type
     ///
     /// Update a event_type's details given its name and the corresponding fields to update.
     #[oai(
-        path = "/event-type/:id",
+        path = "/event-type/:name",
         method = "patch",
         operation_id = "update-event-type",
         tag = "Tag::EventType"
@@ -637,17 +657,17 @@ impl Routes {
     async fn update_event_type(
         &self,
         db: web::Data<&Database>,
-        id: Path<String>,
+        name: Path<String>,
         body: payload::Json<event_type::update::Request>,
     ) -> Result<event_type::update::Response, event_type::update::Error> {
-        self._update_event_type(db, id, body).await
+        self._update_event_type(db, name, body).await
     }
 
     /// Delete a event_type
     ///
     /// Delete a event_type given its name.
     #[oai(
-        path = "/event-type/:id",
+        path = "/event-type/:name",
         method = "delete",
         operation_id = "delete-event-type",
         tag = "Tag::EventType"
@@ -655,8 +675,95 @@ impl Routes {
     async fn delete_event_type(
         &self,
         db: web::Data<&Database>,
-        id: Path<String>,
+        name: Path<String>,
     ) -> Result<event_type::delete::Response, event_type::delete::Error> {
-        self._delete_event_type(db, id).await
+        self._delete_event_type(db, name).await
+    }
+
+    /* Form Field Type */
+    
+    /// Create a new form field type
+    ///
+    /// Create a form field type given its information.
+    #[oai(
+        path = "/form-field-type",
+        method = "post",
+        operation_id = "create-form-field-type",
+        tag = "Tag::Form"
+    )]
+    async fn create_form_field_type(
+        &self,
+        db: web::Data<&Database>,
+        body: payload::Json<form_field_type::create::Request>,
+    ) -> Result<form_field_type::create::Response, form_field_type::create::Error> {
+        self._create_form_field_type(db, body).await
+    }
+
+    /// List or search form field type
+    ///
+    /// Retrieve a list of form field type.
+    #[oai(
+        path = "/form-field-type",
+        method = "get",
+        operation_id = "list-form-field-types",
+        tag = "Tag::Form"
+    )]
+    async fn list_form_field_types(
+        &self,
+        db: web::Data<&Database>,
+    ) -> Result<form_field_type::list::Response, form_field_type::list::Error> {
+        self._list_form_field_type(db).await
+    }
+
+    /// Get a form field type
+    ///
+    /// Retrieve a form field type's details given its name.
+    #[oai(
+        path = "/form-field-type/:type",
+        method = "get",
+        operation_id = "get-form-field-type",
+        tag = "Tag::Form"
+    )]
+    async fn get_form_field_type(
+        &self,
+        db: web::Data<&Database>,
+        r#type: Path<String>,
+    ) -> Result<form_field_type::get::Response, form_field_type::get::Error> {
+        self._get_form_field_type(db, r#type).await
+    }
+
+    /// Update a form field type
+    ///
+    /// Update a form field type's details given its name and the corresponding fields to update.
+    #[oai(
+        path = "/form-field-type/:type",
+        method = "patch",
+        operation_id = "update-form-field-type",
+        tag = "Tag::Form"
+    )]
+    async fn update_form_field_type(
+        &self,
+        db: web::Data<&Database>,
+        r#type: Path<String>,
+        body: payload::Json<form_field_type::update::Request>,
+    ) -> Result<form_field_type::update::Response, form_field_type::update::Error> {
+        self._update_form_field_type(db, r#type, body).await
+    }
+
+    /// Delete a form field type
+    ///
+    /// Delete a form field type given its name.
+    #[oai(
+        path = "/form-field-type/:type",
+        method = "delete",
+        operation_id = "delete-form-field-type",
+        tag = "Tag::Form"
+    )]
+    async fn delete_form_field_type(
+        &self,
+        db: web::Data<&Database>,
+        r#type: Path<String>,
+    ) -> Result<form_field_type::delete::Response, form_field_type::delete::Error> {
+        self._delete_form_field_type(db, r#type).await
     }
 }

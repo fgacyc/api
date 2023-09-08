@@ -25,6 +25,7 @@ pub struct Registration {
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
 pub struct Price {
+    pub id: String,
     pub event_id: String,
     pub name: String,
     pub fee: i32,
@@ -51,6 +52,14 @@ pub struct Session {
 #[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
 pub struct EventType {
     pub name: String,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
+pub struct FormFieldType {
+    pub r#type: String,
+    pub description: String,
     pub created_at: chrono::DateTime<chrono::Utc>,
     pub updated_at: chrono::DateTime<chrono::Utc>,
 }

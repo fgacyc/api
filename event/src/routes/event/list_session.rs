@@ -6,7 +6,7 @@ use crate::{database::Database, entities, error::ErrorResponse};
 #[derive(poem_openapi::ApiResponse)]
 pub enum Response {
     #[oai(status = 200)]
-    Ok(payload::Json<entities::Session>),
+    Ok(payload::Json<Vec<entities::Session>>),
 }
 
 #[derive(poem_openapi::ApiResponse)]
@@ -34,12 +34,9 @@ impl crate::routes::Routes {
             "#,
             &*id
         )
-        .fetch_one(&db.db)
+        .fetch_all(&db.db)
         .await
         .map_err(|e| match e {
-            sqlx::error::Error::RowNotFound => Error::NotFound(payload::Json(ErrorResponse {
-                message: format!("Session with event id '{}' not found", &*id),
-            })),
             _ => Error::InternalServer(payload::Json(ErrorResponse::from(
                 &e as &(dyn std::error::Error + Send + Sync),
             ))),

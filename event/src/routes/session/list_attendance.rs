@@ -6,7 +6,7 @@ use crate::{database::Database, entities, error::ErrorResponse};
 #[derive(poem_openapi::ApiResponse)]
 pub enum Response {
     #[oai(status = 200)]
-    Ok(payload::Json<Vec<entities::Price>>),
+    Ok(payload::Json<Vec<entities::Attendance>>),
 }
 
 #[derive(poem_openapi::ApiResponse)]
@@ -22,15 +22,15 @@ pub enum Error {
 }
 
 impl crate::routes::Routes {
-    pub async fn _list_event_price(
+    pub async fn _list_session_attendance(
         &self,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<Response, Error> {
-        let prices = sqlx::query_as!(
-            entities::Price,
+        let attendances = sqlx::query_as!(
+            entities::Attendance,
             r#"
-            SELECT * FROM price WHERE event_id = $1::TEXT
+            SELECT * FROM attendance WHERE session_id = $1::TEXT
             "#,
             &*id
         )
@@ -42,6 +42,6 @@ impl crate::routes::Routes {
             ))),
         })?;
 
-        Ok(Response::Ok(payload::Json(prices)))
+        Ok(Response::Ok(payload::Json(attendances)))
     }
 }

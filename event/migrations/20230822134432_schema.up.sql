@@ -81,13 +81,15 @@ CREATE TABLE registration_form_field_data (
 );
 
 CREATE TABLE price (
-  event_id TEXT,
-  name TEXT,
+  id TEXT,
+  event_id TEXT NOT NULL,
+  name TEXT NOT NULL,
   fee INTEGER NOT NULL,
   currency_code CHAR(3) NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  PRIMARY KEY(event_id, name),
+  PRIMARY KEY(id),
+  UNIQUE(event_id, name),
   FOREIGN KEY(event_id) REFERENCES event(id),
   FOREIGN KEY(currency_code) REFERENCES currency(code)
 );

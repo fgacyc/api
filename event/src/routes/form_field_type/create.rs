@@ -5,16 +5,16 @@ use serde::{Deserialize, Serialize};
 use crate::{database::Database, entities, error::ErrorResponse};
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object)]
-#[oai(rename = "CreateAttendanceRequest")]
+#[oai(rename = "CreateFormFieldTypeRequest")]
 pub struct Request {
-    session_id: String,
-    user_id: String,
+    r#type: String,
+    description: String,
 }
 
 #[derive(poem_openapi::ApiResponse)]
 pub enum Response {
     #[oai(status = 200)]
-    Ok(payload::Json<entities::Attendance>),
+    Ok(payload::Json<entities::FormFieldType>),
 }
 
 #[derive(poem_openapi::ApiResponse)]
@@ -30,25 +30,25 @@ pub enum Error {
 }
 
 impl crate::routes::Routes {
-    pub async fn _create_attendance(
+    pub async fn _create_form_field_type(
         &self,
         db: web::Data<&Database>,
         body: payload::Json<Request>,
     ) -> Result<Response, Error> {
-        let attendance = sqlx::query_as!(
-            entities::Attendance,
+        let form_field_type = sqlx::query_as!(
+            entities::FormFieldType,
             r#"
-            INSERT INTO "attendance" (
-                session_id,
-                user_id
+            INSERT INTO form_field_type (
+                type,
+                description
             ) VALUES (
                 $1,
                 $2
             )
             RETURNING *
             "#,
-            &body.session_id,
-            &body.user_id
+            &body.r#type,
+            &body.description,
         )
         .fetch_one(&db.db)
         .await
@@ -56,22 +56,10 @@ impl crate::routes::Routes {
             sqlx::Error::Database(e)
                 if e.is_unique_violation()
                     && e.constraint()
-                        .is_some_and(|constraint| constraint == "attendance_pkey") =>
+                        .is_some_and(|constraint| constraint == "form_field_type_pkey") =>
             {
                 Error::BadRequest(payload::Json(ErrorResponse {
-                    message: format!(
-                        "Session id '{}' with user id '{}' already exists",
-                        body.session_id, body.user_id
-                    ),
-                }))
-            }
-            sqlx::Error::Database(e)
-                if e.is_foreign_key_violation()
-                    && e.constraint()
-                        .is_some_and(|constraint| constraint == "attendance_session_id_fkey") =>
-            {
-                Error::BadRequest(payload::Json(ErrorResponse {
-                    message: format!("Session with id '{}' does not exists", body.session_id),
+                    message: format!("Form field type '{}' already exists", body.r#type),
                 }))
             }
             _ => Error::InternalServerError(payload::Json(ErrorResponse::from(
@@ -79,6 +67,6 @@ impl crate::routes::Routes {
             ))),
         })?;
 
-        Ok(Response::Ok(payload::Json(attendance)))
+        Ok(Response::Ok(payload::Json(form_field_type)))
     }
 }

@@ -22,7 +22,7 @@ pub enum Error {
 }
 
 impl crate::routes::Routes {
-    pub async fn _list_event_session_attendance(
+    pub async fn _list_event_attendance(
         &self,
         db: web::Data<&Database>,
         id: Path<String>,
@@ -30,16 +30,19 @@ impl crate::routes::Routes {
         let attendances = sqlx::query_as!(
             entities::Attendance,
             r#"
-            SELECT * FROM attendance WHERE session_id = $1::TEXT
+            SELECT 
+                a.* 
+            FROM 
+                attendance a 
+                    INNER JOIN "session" s ON a.session_id = s.id
+            WHERE 
+                s.event_id = $1::TEXT
             "#,
             &*id
         )
         .fetch_all(&db.db)
         .await
         .map_err(|e| match e {
-            sqlx::error::Error::RowNotFound => Error::NotFound(payload::Json(ErrorResponse {
-                message: format!("Event with id '{}' not found", &*id),
-            })),
             _ => Error::InternalServer(payload::Json(ErrorResponse::from(
                 &e as &(dyn std::error::Error + Send + Sync),
             ))),

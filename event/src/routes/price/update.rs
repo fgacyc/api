@@ -7,7 +7,6 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Deserialize, Serialize, Object)]
 #[oai(rename = "UpdatePriceRequest")]
 pub struct Request {
-    event_id: Option<String>,
     name: Option<i32>,
     fee: Option<i32>,
     currency_code: Option<String>,
@@ -42,11 +41,11 @@ impl crate::routes::Routes {
             entities::Price,
             r#"
             UPDATE price SET
-                name             = COALESCE($1, name),
-                fee              = COALESCE($2, fee),
-                currency_code    = COALESCE($3, currency_code),
-                updated_at       = NOW()
-            WHERE event_id = $4
+                name          = COALESCE($1, name),
+                fee           = COALESCE($2, fee),
+                currency_code = COALESCE($3, currency_code),
+                updated_at    = NOW()
+            WHERE id = $4
             RETURNING *
             "#,
             &body.name,
@@ -58,7 +57,7 @@ impl crate::routes::Routes {
         .await
         .map_err(|e| match e {
             sqlx::error::Error::RowNotFound => Error::NotFound(payload::Json(ErrorResponse {
-                message: format!("Price with event_id '{}' not found", &*id),
+                message: format!("Price with id '{}' not found", &*id),
             })),
             _ => Error::InternalServer(payload::Json(ErrorResponse::from(
                 &e as &(dyn std::error::Error + Send + Sync),

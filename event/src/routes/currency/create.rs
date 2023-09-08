@@ -41,7 +41,7 @@ impl crate::routes::Routes {
         let currency = sqlx::query_as!(
             entities::Currency,
             r#"
-            INSERT INTO "currency"(
+            INSERT INTO "currency" (
                 code,
                 num,
                 denominator,
@@ -65,11 +65,10 @@ impl crate::routes::Routes {
         .fetch_one(&db.db)
         .await
         .map_err(|e| match e {
-            //TODO : Check and see if this pkey check is required for composite pkey relation
             sqlx::Error::Database(e)
                 if e.is_unique_violation()
                     && e.constraint()
-                        .is_some_and(|constraint| constraint == "code_pkey") =>
+                        .is_some_and(|constraint| constraint == "currency_pkey") =>
             {
                 Error::BadRequest(payload::Json(ErrorResponse {
                     message: format!("Code '{}' already exists", body.code),

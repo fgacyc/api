@@ -6,7 +6,7 @@ use crate::{database::Database, entities, error::ErrorResponse};
 #[derive(poem_openapi::ApiResponse)]
 pub enum Response {
     #[oai(status = 200)]
-    Ok(payload::Json<Vec<entities::Price>>),
+    OK(payload::Json<entities::FormFieldType>),
 }
 
 #[derive(poem_openapi::ApiResponse)]
@@ -18,30 +18,35 @@ pub enum Error {
     NotFound(payload::Json<ErrorResponse>),
 
     #[oai(status = 500)]
-    InternalServer(payload::Json<ErrorResponse>),
+    InternalServerError(payload::Json<ErrorResponse>),
 }
 
 impl crate::routes::Routes {
-    pub async fn _list_event_price(
+    pub async fn _get_form_field_type(
         &self,
         db: web::Data<&Database>,
-        id: Path<String>,
+        r#type: Path<String>,
     ) -> Result<Response, Error> {
-        let prices = sqlx::query_as!(
-            entities::Price,
+        let form_field_type = sqlx::query_as!(
+            entities::FormFieldType,
             r#"
-            SELECT * FROM price WHERE event_id = $1::TEXT
+            SELECT * from form_field_type
+            WHERE type = $1
             "#,
-            &*id
+            &*r#type,
         )
-        .fetch_all(&db.db)
+        .fetch_one(&db.db)
         .await
         .map_err(|e| match e {
-            _ => Error::InternalServer(payload::Json(ErrorResponse::from(
+            sqlx::error::Error::RowNotFound => Error::NotFound(payload::Json(ErrorResponse {
+                message: format!("Form field type '{}' not found", &*r#type),
+            })),
+            _ => Error::InternalServerError(payload::Json(ErrorResponse::from(
                 &e as &(dyn std::error::Error + Send + Sync),
             ))),
         })?;
 
-        Ok(Response::Ok(payload::Json(prices)))
+        Ok(Response::OK(payload::Json(form_field_type)))
     }
 }
+
