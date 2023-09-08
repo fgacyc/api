@@ -34,11 +34,18 @@ COMMENT ON COLUMN event.id IS 'Unique identifier for an event (e.g., event_01H7J
 COMMENT ON COLUMN event.created_at IS 'Creation time of a event.';
 COMMENT ON COLUMN event.updated_at IS 'Last updated time of a event.';
 
+CREATE TABLE form_field_type (
+  type TEXT,
+  description TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY(text)
+);
+
 CREATE TABLE registration (
   id TEXT,
   event_id TEXT NOT NULL,
   name TEXT NOT NULL,
-  -- TODO: schema for registration,
   close_at TIMESTAMPTZ NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -47,31 +54,31 @@ CREATE TABLE registration (
   FOREIGN KEY(event_id) REFERENCES event(id)
 );
 
-CREATE TABLE registration_form (
-  id TEXT,
+CREATE TABLE registration_form_field (
   registration_id TEXT NOT NULL,
-  description TEXT,
-  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  PRIMARY KEY(id),
-  UNIQUE(registration_id),
-  FOREIGN KEY(registration_id) REFERENCES registration(id)
-)
-
-CREATE TABLE registration_form_data (
-  id TEXT NOT NULL,
-  user_id TEXT NOT NULL, -- Do we need this? @marcustut
-  
-  -- TODO: registration data
-  input_type TEXT NOT NULL,
+  name TEXT NOT NULL,
   label TEXT NOT NULL,
   description TEXT,
-  registration_form_id TEXT NOT NULL,
-
+  type TEXT NOT NULL,
+  weight SERIAL NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  PRIMARY KEY(id, user_id), -- is user_id the PK? @marcustut
-  FOREIGN KEY(registration_form_id) REFERENCES registration_form(id)
- 
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY(registration_id, name),
+  UNIQUE(registration_id, weight),
+  FOREIGN KEY(registration_id) REFERENCES registration(id),
+  FOREIGN KEY(type) REFERENCES form_field_type(type)
+)
+
+CREATE TABLE registration_form_field_data (
+  registration_id TEXT NOT NULL,
+  name TEXT NOT NULL,
+  user_id TEXT NOT NULL,
+  data TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY(registration_id, name, user_id), 
+  FOREIGN KEY(registration_id) REFERENCES registration(id),
+  FOREIGN KEY(name) REFERENCES registration_form_field(name)
 );
 
 CREATE TABLE price (

@@ -1,15 +1,22 @@
 use poem::web;
-use poem_openapi::{param::Path, payload};
+use poem_openapi::{param::Path, payload, ApiResponse, Object};
 
 use crate::{database::Database, entities, error::ErrorResponse};
 
-#[derive(poem_openapi::ApiResponse)]
-pub enum Response {
-    #[oai(status = 200)]
-    Ok(payload::Json<Vec<entities::ConnectGroup>>),
+#[derive(Object)]
+#[oai(rename = "GetUserConnectGroupsRepsonse")]
+pub struct ResponseBody {
+    cg: entities::ConnectGroup,
+    role: entities::PastoralRole,
 }
 
-#[derive(poem_openapi::ApiResponse)]
+#[derive(ApiResponse)]
+pub enum Response {
+    #[oai(status = 200)]
+    Ok(payload::Json<Vec<ResponseBody>>),
+}
+
+#[derive(ApiResponse)]
 pub enum Error {
     #[oai(status = 400)]
     BadRequest(payload::Json<ErrorResponse>),
@@ -27,15 +34,25 @@ impl crate::routes::Routes {
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<Response, Error> {
-        let cgs = sqlx::query_as!(
-            entities::ConnectGroup,
+        let results = sqlx::query!(
             r#"
             SELECT 
-                cg.* 
+                cg.id AS cg_id,
+                cg.no AS cg_no,
+                cg.name AS cg_name,
+                cg.variant AS cg_variant,
+                cg.satellite_id AS cg_satellite_id,
+                cg.updated_at AS cg_updated_at,
+                cg.created_at AS cg_created_at,
+                pr.id AS pr_id,
+                pr.name AS pr_name,
+                pr.description AS pr_description,
+                pr.weight AS pr_weight
             FROM 
                 connect_group cg 
                     INNER JOIN user_connect_group ucg ON cg.id = ucg.connect_group_id
-            WHERE ucg.user_id = $1::TEXT
+                    INNER JOIN pastoral_role pr on pr.id = ucg.user_role 
+            WHERE ucg.user_id = $1
             "#,
             &*id
         )
@@ -47,6 +64,27 @@ impl crate::routes::Routes {
             ))),
         })?;
 
-        Ok(Response::Ok(payload::Json(cgs)))
+        Ok(Response::Ok(payload::Json(
+            results
+                .into_iter()
+                .map(|result| ResponseBody {
+                    cg: entities::ConnectGroup {
+                        id: result.cg_id,
+                        no: result.cg_no,
+                        name: result.cg_name,
+                        variant: result.cg_variant,
+                        satellite_id: result.cg_satellite_id,
+                        created_at: result.cg_created_at,
+                        updated_at: result.cg_updated_at,
+                    },
+                    role: entities::PastoralRole {
+                        id: result.pr_id,
+                        name: result.pr_name,
+                        description: result.pr_description,
+                        weight: result.pr_weight,
+                    },
+                })
+                .collect(),
+        )))
     }
 }

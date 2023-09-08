@@ -6,7 +6,7 @@ use crate::{database::Database, entities, error::ErrorResponse};
 #[derive(poem_openapi::ApiResponse)]
 pub enum Response {
     #[oai(status = 200)]
-    Ok(payload::Json<entities::Registration>),
+    Ok(payload::Json<Vec<entities::Attendance>>),
 }
 
 #[derive(poem_openapi::ApiResponse)]
@@ -22,19 +22,19 @@ pub enum Error {
 }
 
 impl crate::routes::Routes {
-    pub async fn _get_event_registrations(
+    pub async fn _list_event_session_attendance(
         &self,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<Response, Error> {
-        let registrations = sqlx::query_as!(
-            entities::Registration,
+        let attendances = sqlx::query_as!(
+            entities::Attendance,
             r#"
-            SELECT * from registration WHERE event_id = $1::TEXT
+            SELECT * FROM attendance WHERE session_id = $1::TEXT
             "#,
             &*id
         )
-        .fetch_one(&db.db)
+        .fetch_all(&db.db)
         .await
         .map_err(|e| match e {
             sqlx::error::Error::RowNotFound => Error::NotFound(payload::Json(ErrorResponse {
@@ -45,6 +45,6 @@ impl crate::routes::Routes {
             ))),
         })?;
 
-        Ok(Response::Ok(payload::Json(registrations)))
+        Ok(Response::Ok(payload::Json(attendances)))
     }
 }

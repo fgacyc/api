@@ -1,4 +1,4 @@
-use poem_openapi::{Enum, Object};
+use poem_openapi::Object;
 use serde::{Deserialize, Serialize};
 use sqlx::types::chrono;
 

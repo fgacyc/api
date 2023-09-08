@@ -22,7 +22,7 @@ pub enum Error {
 }
 
 impl crate::routes::Routes {
-    pub async fn _get_event_sessions(
+    pub async fn _list_event_session(
         &self,
         db: web::Data<&Database>,
         id: Path<String>,
