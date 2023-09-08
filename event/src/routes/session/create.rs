@@ -9,7 +9,7 @@ use crate::{database::Database, entities, error::ErrorResponse};
 pub struct Request {
     event_id: String,
     name: String,
-    description: String,
+    description: Option<String>,
     expected_attendees: i32,
     start_at: chrono::DateTime<chrono::Utc>,
     end_at: chrono::DateTime<chrono::Utc>,

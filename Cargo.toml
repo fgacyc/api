@@ -1,6 +1,2 @@
 [workspace]
-
-members = [
-  "identity",
-  "event",
-]
+members = ["identity", "event"]

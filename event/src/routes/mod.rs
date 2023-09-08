@@ -3,14 +3,14 @@ use poem_openapi::{param::Path, payload, OpenApi, Tags};
 
 use crate::database::Database;
 
+mod attendance;
+mod currency;
 mod event;
+mod event_type;
+mod form_field_type;
 mod price;
 mod registration;
 mod session;
-mod attendance;
-mod currency;
-mod event_type;
-mod form_field_type;
 
 #[derive(Tags)]
 enum Tag {
@@ -185,8 +185,7 @@ impl Routes {
         &self,
         db: web::Data<&Database>,
         id: Path<String>,
-    ) -> Result<event::list_attendance::Response, event::list_attendance::Error>
-    {
+    ) -> Result<event::list_attendance::Response, event::list_attendance::Error> {
         self._list_event_attendance(db, id).await
     }
 
@@ -265,6 +264,193 @@ impl Routes {
         id: Path<String>,
     ) -> Result<registration::delete::Response, registration::delete::Error> {
         self._delete_registration(db, id).await
+    }
+
+    /// Create a form field for a registration
+    #[oai(
+        path = "/registration/:id/form-field",
+        method = "post",
+        operation_id = "create-registration-form-field",
+        tag = "Tag::Registration"
+    )]
+    async fn create_registration_form_field(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        body: payload::Json<registration::create_form_field::Request>,
+    ) -> Result<registration::create_form_field::Response, registration::create_form_field::Error>
+    {
+        self._create_registration_form_field(db, id, body).await
+    }
+
+    /// List all form fields for a registration
+    #[oai(
+        path = "/registration/:id/form-field",
+        method = "get",
+        operation_id = "list-registration-form-fields",
+        tag = "Tag::Registration"
+    )]
+    async fn list_registration_form_fields(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<registration::list_form_fields::Response, registration::list_form_fields::Error>
+    {
+        self._list_registration_form_fields(db, id).await
+    }
+
+    /// Get a form field for a registration
+    #[oai(
+        path = "/registration/:id/form-field/:name",
+        method = "get",
+        operation_id = "get-registration-form-field",
+        tag = "Tag::Registration"
+    )]
+    async fn get_registration_form_field(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        name: Path<String>,
+    ) -> Result<registration::get_form_field::Response, registration::get_form_field::Error> {
+        self._get_registration_form_field(db, id, name).await
+    }
+
+    /// Update a form field for a registration
+    #[oai(
+        path = "/registration/:id/form-field/:name",
+        method = "patch",
+        operation_id = "update-registration-form-field",
+        tag = "Tag::Registration"
+    )]
+    async fn update_registration_form_field(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        name: Path<String>,
+        body: payload::Json<registration::update_form_field::Request>,
+    ) -> Result<registration::update_form_field::Response, registration::update_form_field::Error>
+    {
+        self._update_registration_form_field(db, id, name, body)
+            .await
+    }
+
+    /// Delete a form field for a registration
+    #[oai(
+        path = "/registration/:id/form-field/:name",
+        method = "delete",
+        operation_id = "delete-registration-form-field",
+        tag = "Tag::Registration"
+    )]
+    async fn delete_registration_form_field(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        name: Path<String>,
+    ) -> Result<registration::delete_form_field::Response, registration::delete_form_field::Error>
+    {
+        self._delete_registration_form_field(db, id, name).await
+    }
+
+    /// Create a form field data for a registration
+    #[oai(
+        path = "/registration/:id/form-field-data",
+        method = "post",
+        operation_id = "create-registration-form-field-data",
+        tag = "Tag::Registration"
+    )]
+    async fn create_registration_form_field_data(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        body: payload::Json<registration::create_form_field_data::Request>,
+    ) -> Result<
+        registration::create_form_field_data::Response,
+        registration::create_form_field_data::Error,
+    > {
+        self._create_registration_form_field_data(db, id, body)
+            .await
+    }
+
+    /// List all form field datas for a registration
+    #[oai(
+        path = "/registration/:id/form-field-data/:user_id",
+        method = "get",
+        operation_id = "list-registration-form-field-datas",
+        tag = "Tag::Registration"
+    )]
+    async fn list_registration_form_field_datas(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        user_id: Path<String>,
+    ) -> Result<
+        registration::list_form_field_datas::Response,
+        registration::list_form_field_datas::Error,
+    > {
+        self._list_registration_form_field_datas(db, id, user_id)
+            .await
+    }
+
+    /// Get a form field data for a registration for a user
+    #[oai(
+        path = "/registration/:id/form-field-data/:name/:user_id",
+        method = "get",
+        operation_id = "get-registration-form-field-data",
+        tag = "Tag::Registration"
+    )]
+    async fn get_registration_form_field_data(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        name: Path<String>,
+        user_id: Path<String>,
+    ) -> Result<registration::get_form_field_data::Response, registration::get_form_field_data::Error>
+    {
+        self._get_registration_form_field_data(db, id, name, user_id)
+            .await
+    }
+
+    /// Update a form field data for a registration for a user
+    #[oai(
+        path = "/registration/:id/form-field/:name/:user_id",
+        method = "patch",
+        operation_id = "update-registration-form-field-data",
+        tag = "Tag::Registration"
+    )]
+    async fn update_registration_form_field_data(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        name: Path<String>,
+        user_id: Path<String>,
+        body: payload::Json<registration::update_form_field_data::Request>,
+    ) -> Result<
+        registration::update_form_field_data::Response,
+        registration::update_form_field_data::Error,
+    > {
+        self._update_registration_form_field_data(db, id, name, user_id, body)
+            .await
+    }
+
+    /// Delete a form field for a registration for a user
+    #[oai(
+        path = "/registration/:id/form-field/:name/:user_id",
+        method = "delete",
+        operation_id = "delete-registration-form-field-data",
+        tag = "Tag::Registration"
+    )]
+    async fn delete_registration_form_field_data(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        name: Path<String>,
+        user_id: Path<String>,
+    ) -> Result<
+        registration::delete_form_field_data::Response,
+        registration::delete_form_field_data::Error,
+    > {
+        self._delete_registration_form_field_data(db, id, name, user_id)
+            .await
     }
 
     /* Price */
@@ -432,8 +618,7 @@ impl Routes {
         &self,
         db: web::Data<&Database>,
         id: Path<String>,
-    ) -> Result<session::list_attendance::Response, session::list_attendance::Error>
-    {
+    ) -> Result<session::list_attendance::Response, session::list_attendance::Error> {
         self._list_session_attendance(db, id).await
     }
 
@@ -681,7 +866,7 @@ impl Routes {
     }
 
     /* Form Field Type */
-    
+
     /// Create a new form field type
     ///
     /// Create a form field type given its information.
