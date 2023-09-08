@@ -37,7 +37,7 @@ impl crate::routes::Routes {
         let event_type = sqlx::query_as!(
             entities::EventType,
             r#"
-            INSERT INTO event_type(
+            INSERT INTO event_type (
                 name
             ) VALUES (
                 $1
@@ -49,11 +49,10 @@ impl crate::routes::Routes {
         .fetch_one(&db.db)
         .await
         .map_err(|e| match e {
-            //TODO : Check and see if this pkey check is required for composite pkey relation
             sqlx::Error::Database(e)
                 if e.is_unique_violation()
                     && e.constraint()
-                        .is_some_and(|constraint| constraint == "name_pkey") =>
+                        .is_some_and(|constraint| constraint == "event_type_pkey") =>
             {
                 Error::BadRequest(payload::Json(ErrorResponse {
                     message: format!("Name '{}' already exists", body.name),

@@ -24,7 +24,30 @@ pub struct Registration {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
+pub struct RegistrationFormField {
+    pub registration_id: String,
+    pub name: String,
+    pub label: String,
+    pub description: Option<String>,
+    pub r#type: String,
+    pub weight: i32,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
+pub struct RegistrationFormFieldData {
+    pub registration_id: String,
+    pub name: String,
+    pub user_id: String,
+    pub data: String,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
 pub struct Price {
+    pub id: String,
     pub event_id: String,
     pub name: String,
     pub fee: i32,
@@ -56,6 +79,14 @@ pub struct EventType {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
+pub struct FormFieldType {
+    pub r#type: String,
+    pub description: String,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
 pub struct Attendance {
     pub session_id: String,
     pub user_id: String,
@@ -71,4 +102,3 @@ pub struct Currency {
     pub name: String,
     pub countries: Vec<String>,
 }
-

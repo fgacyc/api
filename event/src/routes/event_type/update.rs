@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Clone, Deserialize, Serialize, Object)]
 #[oai(rename = "UpdateEventTypeRequest")]
 pub struct Request {
-    name: String,
+    name: Option<String>,
 }
 
 #[derive(poem_openapi::ApiResponse)]
@@ -32,26 +32,26 @@ impl crate::routes::Routes {
     pub async fn _update_event_type(
         &self,
         db: web::Data<&Database>,
-        id: Path<String>,
+        name: Path<String>,
         body: payload::Json<Request>,
     ) -> Result<Response, Error> {
         let event_type = sqlx::query_as_unchecked!(
             entities::EventType,
             r#"
             UPDATE event_type SET
-                name                 = COALESCE($1, name),
-                updated_at          = NOW()
+                name       = COALESCE($1, name),
+                updated_at = NOW()
             WHERE name = $2
             RETURNING *
             "#,
             &body.name,
-            &*id,
+            &*name,
         )
         .fetch_one(&db.db)
         .await
         .map_err(|e| match e {
             sqlx::error::Error::RowNotFound => Error::NotFound(payload::Json(ErrorResponse {
-                message: format!("EventType with name '{}' not found", &body.name),
+                message: format!("Event type with name '{:?}' not found", &body.name),
             })),
             _ => Error::InternalServer(payload::Json(ErrorResponse::from(
                 &e as &(dyn std::error::Error + Send + Sync),

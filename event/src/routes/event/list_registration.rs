@@ -30,16 +30,13 @@ impl crate::routes::Routes {
         let registrations = sqlx::query_as!(
             entities::Registration,
             r#"
-            SELECT * from registration WHERE event_id = $1::TEXT
+            SELECT * FROM registration WHERE event_id = $1::TEXT
             "#,
             &*id
         )
         .fetch_all(&db.db)
         .await
         .map_err(|e| match e {
-            sqlx::error::Error::RowNotFound => Error::NotFound(payload::Json(ErrorResponse {
-                message: format!("Event with id '{}' not found", &*id),
-            })),
             _ => Error::InternalServer(payload::Json(ErrorResponse::from(
                 &e as &(dyn std::error::Error + Send + Sync),
             ))),

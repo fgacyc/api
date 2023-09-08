@@ -37,4 +37,8 @@ pub struct Config {
     /// The client secret for Auth0 app.
     #[clap(long, env)]
     pub auth0_client_secret: String,
+
+    /// The signing public key for Auth0 app in PEM format.
+    #[clap(long, env)]
+    pub auth0_public_key: String,
 }

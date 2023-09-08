@@ -40,7 +40,7 @@ impl crate::routes::Routes {
         .await
         .map_err(|e| match e {
             sqlx::error::Error::RowNotFound => Error::NotFound(payload::Json(ErrorResponse {
-                message: format!("EventType of name '{}'not found", &*name),
+                message: format!("Event type of name '{}'not found", &*name),
             })),
             _ => Error::InternalServer(payload::Json(ErrorResponse::from(
                 &e as &(dyn std::error::Error + Send + Sync),
