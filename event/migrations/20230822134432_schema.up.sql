@@ -39,7 +39,7 @@ CREATE TABLE form_field_type (
   description TEXT NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  PRIMARY KEY(text)
+  PRIMARY KEY(type)
 );
 
 CREATE TABLE registration (
@@ -67,7 +67,7 @@ CREATE TABLE registration_form_field (
   UNIQUE(registration_id, weight),
   FOREIGN KEY(registration_id) REFERENCES registration(id),
   FOREIGN KEY(type) REFERENCES form_field_type(type)
-)
+);
 
 CREATE TABLE registration_form_field_data (
   registration_id TEXT NOT NULL,
@@ -77,8 +77,7 @@ CREATE TABLE registration_form_field_data (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   PRIMARY KEY(registration_id, name, user_id), 
-  FOREIGN KEY(registration_id) REFERENCES registration(id),
-  FOREIGN KEY(name) REFERENCES registration_form_field(name)
+  FOREIGN KEY(registration_id, name) REFERENCES registration_form_field(registration_id, name)
 );
 
 CREATE TABLE price (
