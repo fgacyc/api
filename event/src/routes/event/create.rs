@@ -59,9 +59,8 @@ impl crate::routes::Routes {
         .map_err(|e| match e {
             sqlx::Error::Database(e)
                 if e.is_foreign_key_violation()
-                    && e.constraint().is_some_and(|constraint| {
-                        constraint == "event_type_fkey"
-                    }) =>
+                    && e.constraint()
+                        .is_some_and(|constraint| constraint == "event_type_fkey") =>
             {
                 Error::BadRequest(payload::Json(ErrorResponse {
                     message: format!("Event with type '{}' does not exists", body.event_type),

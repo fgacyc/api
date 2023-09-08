@@ -71,9 +71,8 @@ impl crate::routes::Routes {
             }
             sqlx::Error::Database(e)
                 if e.is_foreign_key_violation()
-                    && e.constraint().is_some_and(|constraint| {
-                        constraint == "registration_event_id_fkey"
-                    }) =>
+                    && e.constraint()
+                        .is_some_and(|constraint| constraint == "registration_event_id_fkey") =>
             {
                 Error::BadRequest(payload::Json(ErrorResponse {
                     message: format!("Event with id '{}' does not exists", body.event_id),

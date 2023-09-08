@@ -7,7 +7,7 @@ pub struct Event {
     pub id: String,
     pub name: String,
     pub description: String,
-	#[sqlx(rename = "type")]
+    #[sqlx(rename = "type")]
     pub r#type: String,
     pub created_at: chrono::DateTime<chrono::Utc>,
     pub updated_at: chrono::DateTime<chrono::Utc>,
@@ -50,15 +50,15 @@ pub struct Session {
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
 pub struct EventType {
-	pub name: String,
-	pub created_at: chrono::DateTime<chrono::Utc>,
-	pub updated_at: chrono::DateTime<chrono::Utc>,
+    pub name: String,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
 pub struct Attendance {
-	pub session_id: String,
-	pub user_id: String,
-	pub created_at: chrono::DateTime<chrono::Utc>,
-	pub updated_at: chrono::DateTime<chrono::Utc>,
+    pub session_id: String,
+    pub user_id: String,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
 }

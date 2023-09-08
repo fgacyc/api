@@ -64,9 +64,8 @@ impl crate::routes::Routes {
         .map_err(|e| match e {
             sqlx::Error::Database(e)
                 if e.is_foreign_key_violation()
-                    && e.constraint().is_some_and(|constraint| {
-                        constraint == "price_event_id_fkey"
-                    }) =>
+                    && e.constraint()
+                        .is_some_and(|constraint| constraint == "price_event_id_fkey") =>
             {
                 Error::BadRequest(payload::Json(ErrorResponse {
                     message: format!("Event with id '{}' does not exists", body.event_id),
@@ -74,9 +73,8 @@ impl crate::routes::Routes {
             }
             sqlx::Error::Database(e)
                 if e.is_foreign_key_violation()
-                    && e.constraint().is_some_and(|constraint| {
-                        constraint == "price_currency_code_fkey"
-                    }) =>
+                    && e.constraint()
+                        .is_some_and(|constraint| constraint == "price_currency_code_fkey") =>
             {
                 Error::BadRequest(payload::Json(ErrorResponse {
                     message: format!("Currency Code '{}' does not exists", body.currency_code),

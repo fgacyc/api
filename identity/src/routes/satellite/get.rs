@@ -49,4 +49,3 @@ impl crate::routes::Routes {
         Ok(Response::OK(payload::Json(satellite)))
     }
 }
-

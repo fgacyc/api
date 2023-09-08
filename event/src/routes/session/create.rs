@@ -82,9 +82,8 @@ impl crate::routes::Routes {
         .map_err(|e| match e {
             sqlx::Error::Database(e)
                 if e.is_unique_violation()
-                    && e.constraint().is_some_and(|constraint| {
-                        constraint == "session_event_id_name_key"
-                    }) =>
+                    && e.constraint()
+                        .is_some_and(|constraint| constraint == "session_event_id_name_key") =>
             {
                 Error::BadRequest(payload::Json(ErrorResponse {
                     message: format!(
@@ -95,9 +94,8 @@ impl crate::routes::Routes {
             }
             sqlx::Error::Database(e)
                 if e.is_foreign_key_violation()
-                    && e.constraint().is_some_and(|constraint| {
-                        constraint == "session_event_id_fkey"
-                    }) =>
+                    && e.constraint()
+                        .is_some_and(|constraint| constraint == "session_event_id_fkey") =>
             {
                 Error::BadRequest(payload::Json(ErrorResponse {
                     message: format!("Event id '{}' does not exists", body.event_id),

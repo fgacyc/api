@@ -64,4 +64,3 @@ impl crate::routes::Routes {
         Ok(Response::Ok(payload::Json(ministry_department)))
     }
 }
-
