@@ -62,3 +62,13 @@ pub struct Attendance {
     pub created_at: chrono::DateTime<chrono::Utc>,
     pub updated_at: chrono::DateTime<chrono::Utc>,
 }
+
+#[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
+pub struct Currency {
+    pub code: String,
+    pub num: i32,
+    pub denominator: i32,
+    pub name: String,
+    pub countries: Vec<String>,
+}
+
