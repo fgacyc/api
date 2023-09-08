@@ -6,7 +6,7 @@ use crate::{database::Database, entities, error::ErrorResponse};
 #[derive(poem_openapi::ApiResponse)]
 pub enum Response {
     #[oai(status = 200)]
-    Ok(payload::Json<entities::MinistryTeam>),
+    Ok(payload::Json<Vec<entities::Attendance>>),
 }
 
 #[derive(poem_openapi::ApiResponse)]
@@ -22,29 +22,29 @@ pub enum Error {
 }
 
 impl crate::routes::Routes {
-    pub async fn _get_ministry_team(
+    pub async fn _list_event_session_attendance(
         &self,
         db: web::Data<&Database>,
         id: Path<String>,
     ) -> Result<Response, Error> {
-        let ministry_team = sqlx::query_as!(
-            entities::MinistryTeam,
+        let attendances = sqlx::query_as!(
+            entities::Attendance,
             r#"
-            SELECT * from ministry_team WHERE id = $1::TEXT
+            SELECT * FROM attendance WHERE session_id = $1::TEXT
             "#,
             &*id
         )
-        .fetch_one(&db.db)
+        .fetch_all(&db.db)
         .await
         .map_err(|e| match e {
             sqlx::error::Error::RowNotFound => Error::NotFound(payload::Json(ErrorResponse {
-                message: format!("Ministry team with id '{}' not found", &*id),
+                message: format!("Event with id '{}' not found", &*id),
             })),
             _ => Error::InternalServer(payload::Json(ErrorResponse::from(
                 &e as &(dyn std::error::Error + Send + Sync),
             ))),
         })?;
 
-        Ok(Response::Ok(payload::Json(ministry_team)))
+        Ok(Response::Ok(payload::Json(attendances)))
     }
 }

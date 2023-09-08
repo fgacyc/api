@@ -34,11 +34,18 @@ COMMENT ON COLUMN event.id IS 'Unique identifier for an event (e.g., event_01H7J
 COMMENT ON COLUMN event.created_at IS 'Creation time of a event.';
 COMMENT ON COLUMN event.updated_at IS 'Last updated time of a event.';
 
+CREATE TABLE form_field_type (
+  type TEXT,
+  description TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY(text)
+);
+
 CREATE TABLE registration (
   id TEXT,
   event_id TEXT NOT NULL,
   name TEXT NOT NULL,
-  -- TODO: schema for registration,
   close_at TIMESTAMPTZ NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -47,13 +54,31 @@ CREATE TABLE registration (
   FOREIGN KEY(event_id) REFERENCES event(id)
 );
 
-CREATE TABLE registration_data (
+CREATE TABLE registration_form_field (
   registration_id TEXT NOT NULL,
-  user_id TEXT NOT NULL,
-  -- TODO: registration data
+  name TEXT NOT NULL,
+  label TEXT NOT NULL,
+  description TEXT,
+  type TEXT NOT NULL,
+  weight SERIAL NOT NULL,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  PRIMARY KEY(registration_id, user_id),
-  FOREIGN KEY(registration_id) REFERENCES registration(id)
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY(registration_id, name),
+  UNIQUE(registration_id, weight),
+  FOREIGN KEY(registration_id) REFERENCES registration(id),
+  FOREIGN KEY(type) REFERENCES form_field_type(type)
+)
+
+CREATE TABLE registration_form_field_data (
+  registration_id TEXT NOT NULL,
+  name TEXT NOT NULL,
+  user_id TEXT NOT NULL,
+  data TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  PRIMARY KEY(registration_id, name, user_id), 
+  FOREIGN KEY(registration_id) REFERENCES registration(id),
+  FOREIGN KEY(name) REFERENCES registration_form_field(name)
 );
 
 CREATE TABLE price (
@@ -71,8 +96,8 @@ COMMENT ON COLUMN price.event_id IS 'The corresponding identifier of the event.'
 
 CREATE TABLE "session" (
   id TEXT,
-  event_id TEXT,
-  name TEXT,
+  event_id TEXT NOT NULL,
+  name TEXT NOT NULL,
   description TEXT,
   expected_attendees INTEGER NOT NULL,
   start_at TIMESTAMPTZ NOT NULL,
