@@ -48,7 +48,14 @@ impl crate::routes::Routes {
                 user_id, 
                 connect_group_id, 
                 user_role
-            ) "#,
+			) VALUES (
+				$1,
+				$2,
+				$3
+			)
+				ON CONFLICT (user_id, connect_group_id) DO UPDATE
+					SET user_role = EXCLUDED.user_role
+            "#,
         )
         .push_values(&body.users, |mut b, user| {
             b.push_bind(&user.user_id)
