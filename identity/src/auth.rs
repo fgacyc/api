@@ -1,9 +1,7 @@
-use std::sync::Arc;
-
-use auth0::authentication::user_profile::UserInfo;
 use jsonwebtoken::{decode, get_current_timestamp, Algorithm, DecodingKey, Validation};
 use poem_openapi::SecurityScheme;
 use serde::{de, Deserialize};
+use crate::database::Database;
 
 #[derive(SecurityScheme)]
 #[oai(
@@ -12,6 +10,13 @@ use serde::{de, Deserialize};
     checker = "bearer_checker"
 )]
 pub struct BearerAuth(User);
+
+#[derive(Debug)]
+pub struct Email {
+    pub id: String,
+    pub email: String,
+    pub email_verified: bool,
+}
 
 #[derive(Debug)]
 pub struct User {
@@ -107,28 +112,29 @@ pub async fn bearer_checker(
         return None;
     }
 
-    let auth = req
-        .data::<Arc<auth0::authentication::Api>>()
-        .expect("Auth0 authentication client not found in extensions");
+    let db = req
+        .data::<&Database>()
+        .expect("Database not found in extensions");
 
-    tracing::debug!("Fetching user info from Auth0");
+    tracing::debug!("Fetching user info from Database");
     // Fetch user info from Auth0 using the token
-    let user = auth
-        .user_info(auth0::authentication::user_profile::RequestParameters {
-            access_token: bearer.token.clone(),
-        })
-        .send()
-        .await
-        .ok()?
-        .json::<serde_json::Value>()
-        .await
-        .ok()?;
-    tracing::debug!("Fetched user info from Auth0");
+    let user = sqlx::query_as!(
+		Email,
+		r#"
+		SELECT "id", "email", "email_verified" FROM "user" WHERE id = $1
+		"#,
+		token.claims.sub
+	)
+	.fetch_one(&db.db)
+	.await
+	.expect("Error fetching user from database");
+
+    tracing::debug!("Fetched user info from Database");
 
     let user = User {
         id: token.claims.sub,
-        email: user.get("email")?.as_str()?.to_string(),
-        email_verified: user.get("email_verified")?.as_bool()?,
+        email: user.email,
+        email_verified: user.email_verified,
         access_token: bearer.token.clone(),
     };
 
