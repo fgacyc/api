@@ -55,6 +55,8 @@ impl crate::routes::Routes {
                 .push_bind(&*id)
                 .push_bind(&user.role_id);
         })
+        .push("ON CONFLICT (user_id, connect_group_id) DO UPDATE 
+                        SET user_role = EXCLUDED.user_role")
         .build()
         .execute(&db.db)
         .await
