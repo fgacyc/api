@@ -48,7 +48,7 @@ impl crate::routes::Routes {
                 user_id, 
                 connect_group_id, 
                 user_role
-            )"#,
+            ) "#,
         )
         .push_values(&body.users, |mut b, user| {
             b.push_bind(&user.user_id)
