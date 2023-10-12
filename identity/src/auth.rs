@@ -1,7 +1,6 @@
 use jsonwebtoken::{decode, get_current_timestamp, Algorithm, DecodingKey, Validation};
 use poem_openapi::SecurityScheme;
 use serde::{de, Deserialize};
-use crate::database::Database;
 
 #[derive(SecurityScheme)]
 #[oai(
@@ -12,23 +11,16 @@ use crate::database::Database;
 pub struct BearerAuth(User);
 
 #[derive(Debug)]
-pub struct Email {
-    pub id: String,
-    pub email: String,
-    pub email_verified: bool,
-}
-
-#[derive(Debug)]
 pub struct User {
     pub id: String,
     pub email: String,
-    pub email_verified: bool,
     pub access_token: String,
 }
 
 #[allow(unused)]
 #[derive(Debug, Deserialize)]
 struct Claims {
+    email: String, // This is added by Auth0 Action (post-login)
     iss: String,
     #[serde(deserialize_with = "de_str_as_vec")]
     aud: Vec<String>,
@@ -112,29 +104,9 @@ pub async fn bearer_checker(
         return None;
     }
 
-    let db = req
-        .data::<&Database>()
-        .expect("Database not found in extensions");
-
-    tracing::debug!("Fetching user info from Database");
-    // Fetch user info from Auth0 using the token
-    let user = sqlx::query_as!(
-		Email,
-		r#"
-		SELECT "id", "email", "email_verified" FROM "user" WHERE id = $1
-		"#,
-		token.claims.sub
-	)
-	.fetch_one(&db.db)
-	.await
-	.expect("Error fetching user from database");
-
-    tracing::debug!("Fetched user info from Database");
-
     let user = User {
         id: token.claims.sub,
-        email: user.email,
-        email_verified: user.email_verified,
+        email: token.claims.email,
         access_token: bearer.token.clone(),
     };
 
