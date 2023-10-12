@@ -1,6 +1,3 @@
-use std::sync::Arc;
-
-use auth0::authentication::user_profile::UserInfo;
 use jsonwebtoken::{decode, get_current_timestamp, Algorithm, DecodingKey, Validation};
 use poem_openapi::SecurityScheme;
 use serde::{de, Deserialize};
@@ -17,13 +14,13 @@ pub struct BearerAuth(User);
 pub struct User {
     pub id: String,
     pub email: String,
-    pub email_verified: bool,
     pub access_token: String,
 }
 
 #[allow(unused)]
 #[derive(Debug, Deserialize)]
 struct Claims {
+    email: String, // This is added by Auth0 Action (post-login)
     iss: String,
     #[serde(deserialize_with = "de_str_as_vec")]
     aud: Vec<String>,
@@ -107,28 +104,9 @@ pub async fn bearer_checker(
         return None;
     }
 
-    let auth = req
-        .data::<Arc<auth0::authentication::Api>>()
-        .expect("Auth0 authentication client not found in extensions");
-
-    tracing::debug!("Fetching user info from Auth0");
-    // Fetch user info from Auth0 using the token
-    let user = auth
-        .user_info(auth0::authentication::user_profile::RequestParameters {
-            access_token: bearer.token.clone(),
-        })
-        .send()
-        .await
-        .ok()?
-        .json::<serde_json::Value>()
-        .await
-        .ok()?;
-    tracing::debug!("Fetched user info from Auth0");
-
     let user = User {
         id: token.claims.sub,
-        email: user.get("email")?.as_str()?.to_string(),
-        email_verified: user.get("email_verified")?.as_bool()?,
+        email: token.claims.email,
         access_token: bearer.token.clone(),
     };
 
