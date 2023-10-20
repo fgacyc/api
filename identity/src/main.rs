@@ -10,12 +10,12 @@ use poem_openapi::{payload, LicenseObject, OpenApiService};
 
 use crate::config::Config;
 
+mod auth;
 mod config;
 mod database;
 mod entities;
 mod error;
 mod routes;
-mod auth;
 
 #[tokio::main]
 async fn main() -> Result<(), anyhow::Error> {
