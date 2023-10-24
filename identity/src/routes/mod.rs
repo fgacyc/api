@@ -1,7 +1,7 @@
 use poem::web;
 use poem_openapi::{param::Path, payload, OpenApi, Tags};
 
-use crate::{database::Database, auth::BearerAuth};
+use crate::{auth::BearerAuth, database::Database};
 
 mod connect_group;
 mod ministry;
