@@ -144,24 +144,6 @@ impl Routes {
         self._delete_user(db, id).await
     }
 
-	/// List or search deleted users
-    ///
-    /// Retrieve a list of deleted users or search for deleted users given a query. For now it only supports
-    /// retrieving a list of deleted users.
-    #[oai(
-        path = "/users",
-        method = "get",
-        operation_id = "get_deleted_users",
-        tag = "Tag::User"
-    )]
-    async fn get_deleted_users(
-        &self,
-        _auth: BearerAuth,
-        db: web::Data<&Database>,
-    ) -> Result<users::get_deleted_users::Response, users::get_deleted_users::Error> {
-        self._get_deleted_users(db).await
-    }
-
     /// Get a user's pastoral roles
     ///
     /// List the pastoral roles associated with a user.

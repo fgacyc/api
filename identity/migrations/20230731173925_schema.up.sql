@@ -131,7 +131,6 @@ CREATE TABLE "user" (
   date_of_birth TIMESTAMPTZ,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  deleted_at TIMESTAMPTZ DEFAULT NULL,
   PRIMARY KEY (id),
   UNIQUE (no),
   UNIQUE (email),
