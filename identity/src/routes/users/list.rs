@@ -24,6 +24,7 @@ impl crate::routes::Routes {
             entities::User,
             r#"
             SELECT * from "user"
+            WHERE deleted_at IS NULL
             "#,
         )
         .fetch_all(&db.db)
