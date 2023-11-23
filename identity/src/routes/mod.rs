@@ -89,6 +89,23 @@ impl Routes {
         self._list_users(db).await
     }
 
+	/// List or search soft deleted users
+    ///
+    /// Retrieve a list of soft deleted users or search for deleted users given a query.
+    #[oai(
+        path = "/deleted-users",
+        method = "get",
+        operation_id = "list-deleted-users",
+        tag = "Tag::User"
+    )]
+    async fn list_deleted_users(
+        &self,
+        _auth: BearerAuth,
+        db: web::Data<&Database>,
+    ) -> Result<users::list_deleted_users::Response, users::list_deleted_users::Error> {
+        self._list_deleted_users(db).await
+    }
+
     /// Get a user
     ///
     /// Retrieve a user's details given its id.
@@ -128,7 +145,7 @@ impl Routes {
 
     /// Delete a user
     ///
-    /// Deletes a user based on the id from the database.
+    /// Soft deletes a user based on the id from the database. The associated cg and ministry of the user will be deleted.
     #[oai(
         path = "/users/:id",
         method = "delete",
