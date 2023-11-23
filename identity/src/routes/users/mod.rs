@@ -6,4 +6,5 @@ pub mod get_ministries;
 pub mod get_ministry_roles;
 pub mod get_pastoral_roles;
 pub mod list;
+pub mod list_deleted_users;
 pub mod update;

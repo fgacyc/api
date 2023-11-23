@@ -22,6 +22,7 @@ pub struct User {
     pub date_of_birth: Option<chrono::DateTime<chrono::Utc>>,
     pub created_at: chrono::DateTime<chrono::Utc>,
     pub updated_at: chrono::DateTime<chrono::Utc>,
+    pub deleted_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
@@ -34,6 +35,20 @@ pub struct Ministry {
     pub satellite_id: String,
     pub created_at: chrono::DateTime<chrono::Utc>,
     pub updated_at: chrono::DateTime<chrono::Utc>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
+pub struct UserConnectGroup {
+    pub user_id: String,
+    pub connect_group_id: Option<String>,
+    pub user_role: String,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
+pub struct UserMinistry {
+    pub user_id: String,
+    pub ministry_id: Option<String>,
+    pub user_role: String,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
