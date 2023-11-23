@@ -32,9 +32,9 @@ impl crate::routes::Routes {
             r#"
             UPDATE "user" SET "deleted_at" = NOW() WHERE id = $1::TEXT RETURNING *
             "#,
-			&*id
+            &*id
         )
-		.fetch_one(&db.db)
+        .fetch_one(&db.db)
         .await
         .map_err(|e| match e {
             sqlx::error::Error::RowNotFound => Error::NotFound(payload::Json(ErrorResponse::from(
@@ -45,25 +45,25 @@ impl crate::routes::Routes {
             ))),
         })?;
 
-		let _user_cg = sqlx::query_as_unchecked!(
-			entities::UserConnectGroup,
-			r#"
+        let _user_cg = sqlx::query_as_unchecked!(
+            entities::UserConnectGroup,
+            r#"
 			DELETE FROM "user_connect_group" WHERE user_id = $1::TEXT RETURNING *
 			"#,
-			&*id
-		)
-		.fetch_one(&db.db)
-		.await;
+            &*id
+        )
+        .fetch_one(&db.db)
+        .await;
 
-		let _user_ministry = sqlx::query_as_unchecked!(
-			entities::UserMinistry,
-			r#"
+        let _user_ministry = sqlx::query_as_unchecked!(
+            entities::UserMinistry,
+            r#"
 			DELETE FROM "user_ministry" WHERE user_id = $1::TEXT RETURNING *
 			"#,
-			&*id
-		)
-		.fetch_one(&db.db)
-		.await;	
+            &*id
+        )
+        .fetch_one(&db.db)
+        .await;
 
         Ok(Response::Ok(payload::Json(user)))
     }

@@ -22,7 +22,7 @@ pub struct User {
     pub date_of_birth: Option<chrono::DateTime<chrono::Utc>>,
     pub created_at: chrono::DateTime<chrono::Utc>,
     pub updated_at: chrono::DateTime<chrono::Utc>,
-	pub deleted_at : chrono::DateTime<chrono::Utc>,
+    pub deleted_at: chrono::DateTime<chrono::Utc>,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]

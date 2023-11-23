@@ -89,7 +89,7 @@ impl Routes {
         self._list_users(db).await
     }
 
-	/// List or search soft deleted users
+    /// List or search soft deleted users
     ///
     /// Retrieve a list of soft deleted users or search for deleted users given a query.
     #[oai(
