@@ -19,12 +19,11 @@ pub enum Error {
 }
 
 impl crate::routes::Routes {
-    pub async fn _list_users(&self, db: web::Data<&Database>) -> Result<Response, Error> {
+    pub async fn _list_deleted_users(&self, db: web::Data<&Database>) -> Result<Response, Error> {
         let users = sqlx::query_as_unchecked!(
             entities::User,
             r#"
-            SELECT * from "user"
-            WHERE deleted_at IS NULL
+            SELECT * from "user" WHERE deleted_at IS NOT NULL
             "#,
         )
         .fetch_all(&db.db)

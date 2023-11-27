@@ -45,6 +45,12 @@ impl crate::routes::Routes {
             ))),
         })?;
 
+        if user.deleted_at.is_some() {
+            return Err(Error::BadRequest(payload::Json(ErrorResponse {
+                message: format!("User with id '{}' is deleted", &*id),
+            })));
+        }
+
         Ok(Response::Ok(payload::Json(user)))
     }
 }

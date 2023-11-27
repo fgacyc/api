@@ -30,7 +30,7 @@ impl crate::routes::Routes {
         let user = sqlx::query_as_unchecked!(
             entities::User,
             r#"
-            DELETE FROM "user" WHERE id = $1::TEXT RETURNING *
+            UPDATE "user" SET "deleted_at" = NOW() WHERE id = $1::TEXT RETURNING *
             "#,
             &*id
         )
@@ -44,6 +44,26 @@ impl crate::routes::Routes {
                 &e as &(dyn std::error::Error + Send + Sync),
             ))),
         })?;
+
+        let _user_cg = sqlx::query_as_unchecked!(
+            entities::UserConnectGroup,
+            r#"
+			DELETE FROM "user_connect_group" WHERE user_id = $1::TEXT RETURNING *
+			"#,
+            &*id
+        )
+        .fetch_one(&db.db)
+        .await;
+
+        let _user_ministry = sqlx::query_as_unchecked!(
+            entities::UserMinistry,
+            r#"
+			DELETE FROM "user_ministry" WHERE user_id = $1::TEXT RETURNING *
+			"#,
+            &*id
+        )
+        .fetch_one(&db.db)
+        .await;
 
         Ok(Response::Ok(payload::Json(user)))
     }
