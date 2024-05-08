@@ -62,11 +62,11 @@ pub async fn bearer_checker(
     let token = decode::<Claims>(
         &bearer.token,
         &DecodingKey::from_rsa_pem(config.auth0_public_key.as_bytes())
-            .ok()
             .map_err(|e| {
                 tracing::debug!("Failed to parse AUTH0_PUBLIC_KEY as RSA PEM file: {}", e);
                 e
-            })?,
+            })
+            .ok()?,
         &Validation::new(Algorithm::RS256),
     )
     .map_err(|e| {
