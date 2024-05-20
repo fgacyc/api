@@ -1,4 +1,4 @@
-SHELL := /bin/bash
+SHELL := /usr/bin/env bash
 DB_MIGRATIONS_DIR="./db/migrations"
 DB_SCHEMA_FILE="./db/schema.sql"
 DBMATE_MIGRATIONS_TABLE="migrations.schema_migrations"

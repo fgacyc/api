@@ -37,6 +37,21 @@
         "ordinal": 6,
         "name": "updated_at",
         "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 7,
+        "name": "category_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 8,
+        "name": "active",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 9,
+        "name": "closed_at",
+        "type_info": "Timestamptz"
       }
     ],
     "parameters": {
@@ -51,7 +66,10 @@
       true,
       false,
       false,
-      false
+      false,
+      false,
+      false,
+      true
     ]
   },
   "hash": "2dd289c5791601cbd052e3fbb89a13fa25fb85960d713314052907af606e38ed"

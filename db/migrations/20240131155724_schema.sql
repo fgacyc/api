@@ -53,7 +53,7 @@ CREATE TABLE connect_group (
   UNIQUE (satellite_id, no, variant),
   FOREIGN KEY (satellite_id) REFERENCES satellite(id) ON UPDATE CASCADE
 );
-COMMENT ON COLUMN connect_group.id IS 'Unique identifier of a connect_group (e.g., connect_group_01H7JNPD7J67AA5AD87Q4SZDF9).';
+COMMENT ON COLUMN connect_group.id IS 'Unique identifier of a connect group (e.g., connect_group_01H7JNPD7J67AA5AD87Q4SZDF9).';
 COMMENT ON COLUMN connect_group.no IS 'Sequence number of a connect group (e.g., 1, 2, etc.).';
 COMMENT ON COLUMN connect_group.name IS 'Name of a connect group.';
 COMMENT ON COLUMN connect_group.variant IS 'Variant of a connect group (e.g., J, S, T, W, A, B, C).';

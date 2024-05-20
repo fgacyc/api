@@ -1,0 +1,88 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT \n                m.id AS m_id,\n                m.name AS m_name,\n                m.description AS m_description,\n                m.department_id AS m_department_id,\n                m.team_id AS m_team_id,\n                m.satellite_id AS m_satellite_id,\n                m.updated_at AS m_updated_at,\n                m.created_at AS m_created_at,\n                mr.id AS mr_id,\n                mr.name AS mr_name,\n                mr.description AS mr_description,\n                mr.weight AS mr_weight\n            FROM \n                ministry m \n                    INNER JOIN user_ministry um ON m.id = um.ministry_id\n                    INNER JOIN ministry_role mr on mr.id = um.user_role \n            WHERE um.user_id = $1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "m_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "m_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "m_description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "m_department_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "m_team_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "m_satellite_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "m_updated_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 7,
+        "name": "m_created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 8,
+        "name": "mr_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 9,
+        "name": "mr_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 10,
+        "name": "mr_description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 11,
+        "name": "mr_weight",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "7e9bdbb8cb5e3c116ecb4c24e2082477b0410f2c422af95ac601d3274a3b8944"
+}

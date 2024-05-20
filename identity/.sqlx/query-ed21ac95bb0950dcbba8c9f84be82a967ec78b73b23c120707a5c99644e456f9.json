@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            INSERT INTO connect_group (\n                id, \n                name, \n                no,\n                variant, \n                satellite_id\n            ) VALUES (\n                $1,\n                $2,\n                $3,\n                $4,\n                $5\n            ) \n            RETURNING *\n            ",
+  "query": "\n            INSERT INTO connect_group (\n                id, \n                name, \n                no,\n                variant, \n                satellite_id,\n                category_id\n            ) VALUES (\n                $1,\n                $2,\n                $3,\n                $4,\n                $5,\n                $6\n            ) \n            RETURNING *\n            ",
   "describe": {
     "columns": [
       {
@@ -37,6 +37,21 @@
         "ordinal": 6,
         "name": "updated_at",
         "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 7,
+        "name": "category_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 8,
+        "name": "active",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 9,
+        "name": "closed_at",
+        "type_info": "Timestamptz"
       }
     ],
     "parameters": {
@@ -45,6 +60,7 @@
         "Text",
         "Int4",
         "Bpchar",
+        "Text",
         "Text"
       ]
     },
@@ -55,8 +71,11 @@
       true,
       false,
       false,
-      false
+      false,
+      false,
+      false,
+      true
     ]
   },
-  "hash": "3a36f81d91954aad772e3eb07334c6fc349eed347ba5faf79a4c195054957596"
+  "hash": "ed21ac95bb0950dcbba8c9f84be82a967ec78b73b23c120707a5c99644e456f9"
 }

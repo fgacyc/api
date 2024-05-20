@@ -4,6 +4,7 @@ use poem_openapi::{param::Path, payload, OpenApi, Tags};
 use crate::{auth::BearerAuth, database::Database};
 
 mod connect_group;
+mod connect_group_category;
 mod ministry;
 mod ministry_department;
 mod ministry_role;
@@ -22,6 +23,9 @@ enum Tag {
 
     /// Connect group related endpoints
     ConnectGroup,
+
+    /// Connect group category related endpoints
+    ConnectGroupCategory,
 
     /// Ministry team related endpoints
     MinistryTeam,
@@ -455,6 +459,101 @@ impl Routes {
         body: payload::Json<connect_group::remove_users::Request>,
     ) -> Result<connect_group::remove_users::Response, connect_group::remove_users::Error> {
         self._remove_users_from_connect_group(db, id, body).await
+    }
+
+    /* Connect Group Category */
+
+    /// Create a connect group category
+    ///
+    /// Create a new connect group category given its information.
+    #[oai(
+        path = "/connect-group-categories",
+        method = "post",
+        operation_id = "create-connect-group-category",
+        tag = "Tag::ConnectGroupCategory"
+    )]
+    async fn create_connect_group_category(
+        &self,
+        _auth: BearerAuth,
+        db: web::Data<&Database>,
+        body: payload::Json<connect_group_category::create::Request>,
+    ) -> Result<connect_group_category::create::Response, connect_group_category::create::Error>
+    {
+        self._create_connect_group_category(db, body).await
+    }
+
+    /// List or search connect group categories
+    ///
+    /// Retrieve a list of connect group categories or search for connect group categories given a query.
+    #[oai(
+        path = "/connect-group-categories",
+        method = "get",
+        operation_id = "list-connect-group-categories",
+        tag = "Tag::ConnectGroupCategory"
+    )]
+    async fn list_connect_group_categories(
+        &self,
+        _auth: BearerAuth,
+        db: web::Data<&Database>,
+    ) -> Result<connect_group_category::list::Response, connect_group_category::list::Error> {
+        self._list_connect_group_categories(db).await
+    }
+
+    /// Get a connect group category
+    ///
+    /// Retrieve a connect group category's details given its id.
+    #[oai(
+        path = "/connect-group-categories/:id",
+        method = "get",
+        operation_id = "get-connect-group-category",
+        tag = "Tag::ConnectGroupCategory"
+    )]
+    async fn get_connect_group_category(
+        &self,
+        _auth: BearerAuth,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<connect_group_category::get::Response, connect_group_category::get::Error> {
+        self._get_connect_group_category(db, id).await
+    }
+
+    /// Update a connect group category
+    ///
+    /// Update a connect group category's details given its id and the corresponding fields to update.
+    #[oai(
+        path = "/connect-group-categories/:id",
+        method = "patch",
+        operation_id = "update-connect-group-category",
+        tag = "Tag::ConnectGroupCategory"
+    )]
+    async fn update_connect_group_category(
+        &self,
+        _auth: BearerAuth,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        body: payload::Json<connect_group_category::update::Request>,
+    ) -> Result<connect_group_category::update::Response, connect_group_category::update::Error>
+    {
+        self._update_connect_group_category(db, id, body).await
+    }
+
+    /// Delete a connect group category
+    ///
+    /// Delete a connect group category given its id.
+    #[oai(
+        path = "/connect-group-categories/:id",
+        method = "delete",
+        operation_id = "delete-connect-group-category",
+        tag = "Tag::ConnectGroupCategory"
+    )]
+    async fn delete_connect_group_category(
+        &self,
+        _auth: BearerAuth,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<connect_group_category::delete::Response, connect_group_category::delete::Error>
+    {
+        self._delete_connect_group_category(db, id).await
     }
 
     /* Pastoral Roles */

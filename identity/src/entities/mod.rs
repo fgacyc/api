@@ -51,8 +51,17 @@ pub struct ConnectGroup {
     pub name: Option<String>,
     pub variant: Option<String>,
     pub satellite_id: String,
+    pub category_id: String,
+    pub active: bool,
+    pub closed_at: Option<chrono::DateTime<chrono::Utc>>,
     pub created_at: chrono::DateTime<chrono::Utc>,
     pub updated_at: chrono::DateTime<chrono::Utc>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
+pub struct ConnectGroupCategory {
+    pub id: String,
+    pub name: String,
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]

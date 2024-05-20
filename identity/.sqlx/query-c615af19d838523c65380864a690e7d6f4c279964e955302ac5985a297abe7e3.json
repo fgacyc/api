@@ -1,0 +1,100 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT \n                cg.id AS cg_id,\n                cg.no AS cg_no,\n                cg.name AS cg_name,\n                cg.variant AS cg_variant,\n                cg.satellite_id AS cg_satellite_id,\n                cg.category_id AS cg_category_id,\n                cg.active AS cg_active,\n                cg.closed_at AS cg_closed_at,\n                cg.updated_at AS cg_updated_at,\n                cg.created_at AS cg_created_at,\n                pr.id AS pr_id,\n                pr.name AS pr_name,\n                pr.description AS pr_description,\n                pr.weight AS pr_weight\n            FROM \n                connect_group cg \n                    INNER JOIN user_connect_group ucg ON cg.id = ucg.connect_group_id\n                    INNER JOIN pastoral_role pr on pr.id = ucg.user_role \n            WHERE ucg.user_id = $1\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "cg_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "cg_no",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 2,
+        "name": "cg_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "cg_variant",
+        "type_info": "Bpchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "cg_satellite_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "cg_category_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "cg_active",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 7,
+        "name": "cg_closed_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 8,
+        "name": "cg_updated_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 9,
+        "name": "cg_created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 10,
+        "name": "pr_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 11,
+        "name": "pr_name",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 12,
+        "name": "pr_description",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 13,
+        "name": "pr_weight",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      true,
+      true,
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "c615af19d838523c65380864a690e7d6f4c279964e955302ac5985a297abe7e3"
+}

@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT * from connect_group\n            ",
+  "query": "\n            UPDATE connect_group SET\n                no           = COALESCE($1, no),\n                name         = COALESCE($2, name),\n                variant      = COALESCE($3, variant),\n                satellite_id = COALESCE($4, satellite_id),\n                category_id  = COALESCE($5, category_id),\n                active       = COALESCE($6, active),\n                closed_at    = COALESCE($7, closed_at),\n                updated_at   = NOW()\n            WHERE id = $8\n            RETURNING *\n            ",
   "describe": {
     "columns": [
       {
@@ -55,7 +55,16 @@
       }
     ],
     "parameters": {
-      "Left": []
+      "Left": [
+        "Int4",
+        "Text",
+        "Bpchar",
+        "Text",
+        "Text",
+        "Bool",
+        "Timestamptz",
+        "Text"
+      ]
     },
     "nullable": [
       false,
@@ -70,5 +79,5 @@
       true
     ]
   },
-  "hash": "d6931b63c88341ab28f65c16872b6b449c1464da465089d13c9f7f64cb0502ee"
+  "hash": "0578edc1a536a3c37e288987ce9aaf66a2b2afc81547196fe40ae5cd7c2fd56a"
 }
