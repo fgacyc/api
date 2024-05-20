@@ -220,6 +220,81 @@ impl Routes {
         self._get_ministries(db, id).await
     }
 
+    /// Create a user relationship
+    ///
+    /// Associate a user to another by creating a user relationship.
+    #[oai(
+        path = "/users/:id/relationships",
+        method = "post",
+        operation_id = "create-user-relationship",
+        tag = "Tag::User"
+    )]
+    async fn create_user_relationship(
+        &self,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        body: payload::Json<users::create_relationship::Request>,
+    ) -> Result<users::create_relationship::Response, users::create_relationship::Error> {
+        self._create_user_relationship(db, id, body).await
+    }
+
+    /// List or search relationships for a particular user
+    ///
+    /// Retrieve a list of relationships or search for relationships given a query. For now it only supports
+    /// retrieving a list of relationships.
+    #[oai(
+        path = "/users/:id/relationships",
+        method = "get",
+        operation_id = "list-relationships",
+        tag = "Tag::User"
+    )]
+    async fn list_user_relationships(
+        &self,
+        _auth: BearerAuth,
+        db: web::Data<&Database>,
+        id: Path<String>,
+    ) -> Result<users::list_relationships::Response, users::list_relationships::Error> {
+        self._list_user_relationships(db, id).await
+    }
+
+    /// Update a user relationship
+    ///
+    /// Update a user relationship given the source and the destination user.
+    #[oai(
+        path = "/users/:id/relationships",
+        method = "patch",
+        operation_id = "update-user-relationship",
+        tag = "Tag::User"
+    )]
+    async fn update_user_relationship(
+        &self,
+        _auth: BearerAuth,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        body: payload::Json<users::update_relationship::Request>,
+    ) -> Result<users::update_relationship::Response, users::update_relationship::Error> {
+        self._update_user_relationship(db, id, body).await
+    }
+
+    /// Delete a user relationship
+    ///
+    /// Deletes a user relationship.
+    #[oai(
+        path = "/users/:id/relationships",
+        method = "delete",
+        operation_id = "delete-user-relationship",
+        tag = "Tag::User"
+    )]
+    async fn delete_user_relationship(
+        &self,
+        _auth: BearerAuth,
+        db: web::Data<&Database>,
+        id: Path<String>,
+        body: payload::Json<users::delete_relationship::Request>,
+    ) -> Result<users::delete_relationship::Response, users::delete_relationship::Error> {
+        self._delete_user_relationship(db, id, body).await
+    }
+
     /* Satellite */
 
     /// Create a satellite

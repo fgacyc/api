@@ -1,0 +1,48 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO user_relationship (\n                source_user_id,\n                destination_user_id,\n                relationship\n            ) VALUES (\n                $1, \n                $2, \n                $3\n            ) \n            RETURNING *\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "source_user_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "destination_user_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "relationship",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 4,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "77a37d933609dc9cba393940fce9f211a16f5ec3d0e2927ae6f72321c1161a11"
+}

@@ -1,0 +1,47 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            DELETE FROM user_relationship WHERE source_user_id = $1::TEXT AND destination_user_id = $2::TEXT RETURNING *\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "source_user_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 1,
+        "name": "destination_user_id",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 2,
+        "name": "relationship",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 4,
+        "name": "updated_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        "Text"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "4c9e3f9c89571ac0eb27c44c3aae9b980c7cf6010586b219abc3a0a65b22138a"
+}

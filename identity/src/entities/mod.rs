@@ -25,6 +25,15 @@ pub struct User {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
+pub struct UserRelationship {
+    pub source_user_id: String,
+    pub destination_user_id: String,
+    pub relationship: String,
+    pub created_at: chrono::DateTime<chrono::Utc>,
+    pub updated_at: chrono::DateTime<chrono::Utc>,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, Object, sqlx::FromRow)]
 pub struct Ministry {
     pub id: String,
     pub name: String,
