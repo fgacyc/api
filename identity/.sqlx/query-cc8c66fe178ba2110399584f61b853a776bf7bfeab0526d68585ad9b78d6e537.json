@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT * from \"user\"\n            ",
+  "query": "\n            SELECT * \n            FROM \"user\"\n            WHERE \n                to_tsvector(email || ' ' || name) @@ to_tsquery($1)\n            ",
   "describe": {
     "columns": [
       {
@@ -137,7 +137,9 @@
       }
     ],
     "parameters": {
-      "Left": []
+      "Left": [
+        "Text"
+      ]
     },
     "nullable": [
       false,
@@ -160,5 +162,5 @@
       false
     ]
   },
-  "hash": "4c7d745e771015953f59e40c48c4eaa903f0e37f68d8863204222d65da817036"
+  "hash": "cc8c66fe178ba2110399584f61b853a776bf7bfeab0526d68585ad9b78d6e537"
 }

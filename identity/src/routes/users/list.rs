@@ -1,5 +1,6 @@
 use poem::web;
-use poem_openapi::payload;
+use poem_openapi::{param, payload, Object};
+use serde::{Deserialize, Serialize};
 
 use crate::{database::Database, entities, error::ErrorResponse};
 
@@ -19,12 +20,20 @@ pub enum Error {
 }
 
 impl crate::routes::Routes {
-    pub async fn _list_users(&self, db: web::Data<&Database>) -> Result<Response, Error> {
+    pub async fn _list_users(
+        &self,
+        search: param::Query<Option<String>>,
+        db: web::Data<&Database>,
+    ) -> Result<Response, Error> {
         let users = sqlx::query_as_unchecked!(
             entities::User,
             r#"
-            SELECT * from "user"
+            SELECT * 
+            FROM "user"
+            WHERE 
+                to_tsvector(email || ' ' || name) @@ to_tsquery($1)
             "#,
+            search.clone().unwrap_or("".to_string()),
         )
         .fetch_all(&db.db)
         .await

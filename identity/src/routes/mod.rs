@@ -1,5 +1,5 @@
 use poem::web;
-use poem_openapi::{param::Path, payload, OpenApi, Tags};
+use poem_openapi::{param, payload, OpenApi, Tags};
 
 use crate::{auth::BearerAuth, database::Database};
 
@@ -88,9 +88,10 @@ impl Routes {
     async fn list_users(
         &self,
         _auth: BearerAuth,
+        search: param::Query<Option<String>>,
         db: web::Data<&Database>,
     ) -> Result<users::list::Response, users::list::Error> {
-        self._list_users(db).await
+        self._list_users(search, db).await
     }
 
     /// Get a user
@@ -106,7 +107,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
     ) -> Result<users::get::Response, users::get::Error> {
         self._get_user(db, id).await
     }
@@ -124,7 +125,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
         body: payload::Json<users::update::Request>,
     ) -> Result<users::update::Response, users::update::Error> {
         self._update_user(db, id, body).await
@@ -143,7 +144,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
     ) -> Result<users::delete::Response, users::delete::Error> {
         self._delete_user(db, id).await
     }
@@ -161,7 +162,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
     ) -> Result<users::get_pastoral_roles::Response, users::get_pastoral_roles::Error> {
         self._get_user_pastoral_roles(db, id).await
     }
@@ -179,7 +180,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
     ) -> Result<users::get_ministry_roles::Response, users::get_ministry_roles::Error> {
         self._get_user_ministry_roles(db, id).await
     }
@@ -197,7 +198,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
     ) -> Result<users::get_connect_groups::Response, users::get_connect_groups::Error> {
         self._get_user_connect_groups(db, id).await
     }
@@ -215,7 +216,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
     ) -> Result<users::get_ministries::Response, users::get_ministries::Error> {
         self._get_ministries(db, id).await
     }
@@ -232,7 +233,7 @@ impl Routes {
     async fn create_user_relationship(
         &self,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
         body: payload::Json<users::create_relationship::Request>,
     ) -> Result<users::create_relationship::Response, users::create_relationship::Error> {
         self._create_user_relationship(db, id, body).await
@@ -252,7 +253,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
     ) -> Result<users::list_relationships::Response, users::list_relationships::Error> {
         self._list_user_relationships(db, id).await
     }
@@ -270,7 +271,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
         body: payload::Json<users::update_relationship::Request>,
     ) -> Result<users::update_relationship::Response, users::update_relationship::Error> {
         self._update_user_relationship(db, id, body).await
@@ -289,7 +290,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
         body: payload::Json<users::delete_relationship::Request>,
     ) -> Result<users::delete_relationship::Response, users::delete_relationship::Error> {
         self._delete_user_relationship(db, id, body).await
@@ -345,7 +346,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
     ) -> Result<satellite::get::Response, satellite::get::Error> {
         self._get_satellite(db, id).await
     }
@@ -363,7 +364,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
         body: payload::Json<satellite::update::Request>,
     ) -> Result<satellite::update::Response, satellite::update::Error> {
         self._update_satellite(db, id, body).await
@@ -382,7 +383,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
     ) -> Result<satellite::delete::Response, satellite::delete::Error> {
         self._delete_satellite(db, id).await
     }
@@ -437,7 +438,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
     ) -> Result<connect_group::get::Response, connect_group::get::Error> {
         self._get_connect_group(db, id).await
     }
@@ -455,7 +456,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
         body: payload::Json<connect_group::update::Request>,
     ) -> Result<connect_group::update::Response, connect_group::update::Error> {
         self._update_connect_group(db, id, body).await
@@ -474,7 +475,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
     ) -> Result<connect_group::delete::Response, connect_group::delete::Error> {
         self._delete_connect_group(db, id).await
     }
@@ -492,7 +493,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
         body: payload::Json<connect_group::associate_users::Request>,
     ) -> Result<connect_group::associate_users::Response, connect_group::associate_users::Error>
     {
@@ -512,7 +513,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
     ) -> Result<connect_group::get_users::Response, connect_group::get_users::Error> {
         self._get_connect_group_users(db, id).await
     }
@@ -530,7 +531,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
         body: payload::Json<connect_group::remove_users::Request>,
     ) -> Result<connect_group::remove_users::Response, connect_group::remove_users::Error> {
         self._remove_users_from_connect_group(db, id, body).await
@@ -587,7 +588,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
     ) -> Result<connect_group_category::get::Response, connect_group_category::get::Error> {
         self._get_connect_group_category(db, id).await
     }
@@ -605,7 +606,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
         body: payload::Json<connect_group_category::update::Request>,
     ) -> Result<connect_group_category::update::Response, connect_group_category::update::Error>
     {
@@ -625,7 +626,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
     ) -> Result<connect_group_category::delete::Response, connect_group_category::delete::Error>
     {
         self._delete_connect_group_category(db, id).await
@@ -681,7 +682,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
     ) -> Result<pastoral_role::get::Response, pastoral_role::get::Error> {
         self._get_pastoral_role(db, id).await
     }
@@ -699,7 +700,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
         body: payload::Json<pastoral_role::update::Request>,
     ) -> Result<pastoral_role::update::Response, pastoral_role::update::Error> {
         self._update_pastoral_role(db, id, body).await
@@ -718,7 +719,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
     ) -> Result<pastoral_role::delete::Response, pastoral_role::delete::Error> {
         self._delete_pastoral_role(db, id).await
     }
@@ -773,7 +774,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
     ) -> Result<ministry_role::get::Response, ministry_role::get::Error> {
         self._get_ministry_role(db, id).await
     }
@@ -791,7 +792,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
         body: payload::Json<ministry_role::update::Request>,
     ) -> Result<ministry_role::update::Response, ministry_role::update::Error> {
         self._update_ministry_role(db, id, body).await
@@ -810,7 +811,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
     ) -> Result<ministry_role::delete::Response, ministry_role::delete::Error> {
         self._delete_ministry_role(db, id).await
     }
@@ -865,7 +866,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
     ) -> Result<ministry_team::get::Response, ministry_team::get::Error> {
         self._get_ministry_team(db, id).await
     }
@@ -883,7 +884,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
         body: payload::Json<ministry_team::update::Request>,
     ) -> Result<ministry_team::update::Response, ministry_team::update::Error> {
         self._update_ministry_team(db, id, body).await
@@ -902,7 +903,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
     ) -> Result<ministry_team::delete::Response, ministry_team::delete::Error> {
         self._delete_ministry_team(db, id).await
     }
@@ -957,7 +958,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
     ) -> Result<ministry_department::get::Response, ministry_department::get::Error> {
         self._get_ministry_department(db, id).await
     }
@@ -975,7 +976,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
         body: payload::Json<ministry_department::update::Request>,
     ) -> Result<ministry_department::update::Response, ministry_department::update::Error> {
         self._update_ministry_department(db, id, body).await
@@ -993,7 +994,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
     ) -> Result<ministry_department::delete::Response, ministry_department::delete::Error> {
         self._delete_ministry_department(db, id).await
     }
@@ -1048,7 +1049,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
     ) -> Result<ministry::get::Response, ministry::get::Error> {
         self._get_ministry(db, id).await
     }
@@ -1066,7 +1067,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
         body: payload::Json<ministry::update::Request>,
     ) -> Result<ministry::update::Response, ministry::update::Error> {
         self._update_ministry(db, id, body).await
@@ -1085,7 +1086,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
     ) -> Result<ministry::delete::Response, ministry::delete::Error> {
         self._delete_ministry(db, id).await
     }
@@ -1103,7 +1104,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
         body: payload::Json<ministry::associate_users::Request>,
     ) -> Result<ministry::associate_users::Response, ministry::associate_users::Error> {
         self._associate_users_with_ministry(db, id, body).await
@@ -1122,7 +1123,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
     ) -> Result<ministry::get_users::Response, ministry::get_users::Error> {
         self._get_ministry_users(db, id).await
     }
@@ -1140,7 +1141,7 @@ impl Routes {
         &self,
         _auth: BearerAuth,
         db: web::Data<&Database>,
-        id: Path<String>,
+        id: param::Path<String>,
         body: payload::Json<ministry::remove_users::Request>,
     ) -> Result<ministry::remove_users::Response, ministry::remove_users::Error> {
         self._remove_users_from_ministry(db, id, body).await
