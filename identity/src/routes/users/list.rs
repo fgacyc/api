@@ -1,6 +1,5 @@
 use poem::web;
-use poem_openapi::{param, payload, Object};
-use serde::{Deserialize, Serialize};
+use poem_openapi::{param, payload};
 
 use crate::{database::Database, entities, error::ErrorResponse};
 
@@ -31,7 +30,7 @@ impl crate::routes::Routes {
             SELECT * 
             FROM "user"
             WHERE 
-                to_tsvector(email || ' ' || name) @@ to_tsquery($1)
+                to_tsvector(email || ' ' || name || ' ' || username || ' ' || given_name || ' ' || family_name) @@ to_tsquery($1)
             "#,
             search.clone().unwrap_or("".to_string()),
         )
