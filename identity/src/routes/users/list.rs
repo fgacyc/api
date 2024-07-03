@@ -30,7 +30,7 @@ impl crate::routes::Routes {
             SELECT * 
             FROM "user"
             WHERE 
-                to_tsvector(email || ' ' || name || ' ' || username || ' ' || given_name || ' ' || family_name) @@ to_tsquery($1)
+                to_tsvector(email || ' ' || name || ' ' || COALESCE(username, '') || ' ' || COALESCE(given_name, '') || ' ' || COALESCE(family_name, '')) @@ to_tsquery($1)
             "#,
             search.clone().unwrap_or("".to_string()),
         )
