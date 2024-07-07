@@ -1,0 +1,24 @@
+version: '3'
+services:
+  rest:
+    container_name: pg_postgrest
+    image: postgrest/postgrest:v10.0.0
+    restart: unless-stopped
+    ports:
+      - 3002:3000
+    volumes:
+      - ${PWD}/keys.json:/keys.json
+    environment:
+      PGRST_DB_SCHEMA: public
+    env_file:
+      ./.env
+
+  graphiql:
+    container_name: pg_graphiql
+    image: nginx
+    volumes:
+      - ./docker:/usr/share/nginx/html
+    ports:
+      - 4002:80
+    depends_on:
+      - rest

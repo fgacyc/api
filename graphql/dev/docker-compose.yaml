@@ -6,6 +6,8 @@ services:
     restart: unless-stopped
     ports:
       - 3001:3000
+    volumes:
+      - ${PWD}/keys.json:/keys.json
     environment:
       PGRST_DB_SCHEMA: public
     env_file:
@@ -17,6 +19,6 @@ services:
     volumes:
       - ./docker:/usr/share/nginx/html
     ports:
-      - 4000:80
+      - 4001:80
     depends_on:
       - rest
