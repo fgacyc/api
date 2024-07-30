@@ -30,7 +30,7 @@ impl crate::routes::Routes {
         let user = sqlx::query_as_unchecked!(
             entities::User,
             r#"
-            SELECT * from "user" WHERE id = $1::TEXT
+            SELECT * from "user" WHERE id = $1::TEXT AND deleted IS FALSE
             "#,
             &*id
         )

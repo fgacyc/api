@@ -134,6 +134,11 @@
         "ordinal": 17,
         "name": "updated_at",
         "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 18,
+        "name": "deleted",
+        "type_info": "Bool"
       }
     ],
     "parameters": {
@@ -158,6 +163,7 @@
       true,
       true,
       true,
+      false,
       false,
       false
     ]

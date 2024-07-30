@@ -8,6 +8,7 @@ pub struct User {
     pub no: i32,
     pub email: String,
     pub email_verified: bool,
+    pub deleted: bool,
     pub name: String,
     pub username: Option<String>,
     pub given_name: Option<String>,

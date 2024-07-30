@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            SELECT * \n            FROM \"user\"\n            WHERE \n                to_tsvector(email || ' ' || name || ' ' || COALESCE(username, '') || ' ' || COALESCE(given_name, '') || ' ' || COALESCE(family_name, '')) @@ to_tsquery($1)\n            ",
+  "query": "\n            UPDATE \"user\" SET  \n                name                  = COALESCE($1, name),\n                email                 = COALESCE($2, email), \n                email_verified        = COALESCE($3, email_verified),\n                username              = COALESCE($4, username),\n                given_name            = COALESCE($5, given_name),\n                family_name           = COALESCE($6, family_name),\n                gender                = COALESCE($7, gender), \n                ic_number             = COALESCE($8, ic_number), \n                phone_number          = COALESCE($9, phone_number), \n                phone_number_verified = COALESCE($10, phone_number_verified), \n                nickname              = COALESCE($11, nickname),\n                avatar_url            = COALESCE($12, avatar_url),\n                address               = COALESCE($13, address),\n                date_of_birth         = COALESCE($14, date_of_birth),\n                updated_at            = NOW()\n            WHERE id = $15 AND deleted IS FALSE\n            RETURNING *\n            ",
   "describe": {
     "columns": [
       {
@@ -134,10 +134,71 @@
         "ordinal": 17,
         "name": "updated_at",
         "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 18,
+        "name": "deleted",
+        "type_info": "Bool"
       }
     ],
     "parameters": {
       "Left": [
+        "Text",
+        "Text",
+        "Bool",
+        "Text",
+        "Text",
+        "Text",
+        {
+          "Custom": {
+            "name": "gender",
+            "kind": {
+              "Enum": [
+                "male",
+                "female"
+              ]
+            }
+          }
+        },
+        "Text",
+        "Text",
+        "Bool",
+        "Text",
+        "Text",
+        {
+          "Custom": {
+            "name": "_address",
+            "kind": {
+              "Composite": [
+                [
+                  "line_one",
+                  "Text"
+                ],
+                [
+                  "line_two",
+                  "Text"
+                ],
+                [
+                  "city",
+                  "Text"
+                ],
+                [
+                  "state",
+                  "Text"
+                ],
+                [
+                  "country",
+                  "Text"
+                ],
+                [
+                  "postal_code",
+                  "Text"
+                ]
+              ]
+            }
+          }
+        },
+        "Timestamptz",
         "Text"
       ]
     },
@@ -159,8 +220,9 @@
       true,
       true,
       false,
+      false,
       false
     ]
   },
-  "hash": "3ddc384d9c33b44cf1f76d717d70fec81e9ec35993a0d59dc034306e731788a2"
+  "hash": "aeedd4ab306c6c36531e66f3b4f5a8c28eea3390d409585078b42e498d8fb1a7"
 }

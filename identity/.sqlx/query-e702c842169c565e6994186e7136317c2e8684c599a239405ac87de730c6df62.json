@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "\n            DELETE FROM \"user\" WHERE id = $1::TEXT RETURNING *\n            ",
+  "query": "\n            SELECT * from \"user\" WHERE id = $1::TEXT AND deleted IS FALSE\n            ",
   "describe": {
     "columns": [
       {
@@ -134,6 +134,11 @@
         "ordinal": 17,
         "name": "updated_at",
         "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 18,
+        "name": "deleted",
+        "type_info": "Bool"
       }
     ],
     "parameters": {
@@ -159,8 +164,9 @@
       true,
       true,
       false,
+      false,
       false
     ]
   },
-  "hash": "c9554ad470960e2c02d730cf43ef6c7166d0025a4f88af6fc28ca982d6e72ef3"
+  "hash": "e702c842169c565e6994186e7136317c2e8684c599a239405ac87de730c6df62"
 }

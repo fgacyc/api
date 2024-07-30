@@ -69,7 +69,7 @@ impl crate::routes::Routes {
                 address               = COALESCE($13, address),
                 date_of_birth         = COALESCE($14, date_of_birth),
                 updated_at            = NOW()
-            WHERE id = $15
+            WHERE id = $15 AND deleted IS FALSE
             RETURNING *
             "#,
             &body.name,
