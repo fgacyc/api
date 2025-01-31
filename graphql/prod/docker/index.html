@@ -58,15 +58,39 @@
       rel="stylesheet"
       href="https://unpkg.com/@graphiql/plugin-explorer/dist/style.css"
     />
+
+    <!-- For auth0 authentication -->
+    <script 
+      src="https://cdn.auth0.com/js/auth0-spa-js/2.1/auth0-spa-js.production.js"
+    ></script>
   </head>
 
   <body>
     <div id="graphiql">Loading...</div>
-    <script>
+    <script type="module">
+      const auth = await auth0.createAuth0Client({
+        domain: 'fgacyc.us.auth0.com',
+        clientId: 'Y1g2z7UBAzSqR7RPHvvvwLAb4JVXLx6z', // ERP App (it is safe to expose Client ID, it is public anyways)
+        authorizationParams: {
+          audience: 'https://graphql.fgacyc.com',
+        }
+      });
+
+      try {
+        const redirectResult = await auth.handleRedirectCallback();
+        const user = await auth.getUser();
+        console.log(`logged in user: ${JSON.stringify(user, null, 2)}`);
+      } catch (err) {
+        const user = await auth.getUser();
+        if (!user) await auth.loginWithRedirect();
+      }
+
+      const token = await auth.getTokenSilently();
+
       const root = ReactDOM.createRoot(document.getElementById('graphiql'));
       const fetcher = GraphiQL.createFetcher({
         url: 'https://graphql.fgacyc.com/rpc/graphql',
-	headers:  { Authorization: 'Bearer eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IkRaeWNGaUJZVElFNEx2Z3VQRnBEWiJ9.eyJlbWFpbCI6Im1hcmN1c3RoZWRyZWFtZXJAZ21haWwuY29tIiwicm9sZSI6ImZnYWN5Yy5vZmZpY2lhbCIsImlzcyI6Imh0dHBzOi8vZmdhY3ljLWRldi51cy5hdXRoMC5jb20vIiwic3ViIjoiZ29vZ2xlLW9hdXRoMnwxMDg3NzExMjUxMDk0ODI0MzU1MTIiLCJhdWQiOlsiaHR0cHM6Ly9ncmFwaHFsLmRldmVsb3BtZW50LmZnYWN5Yy5jb20vIiwiaHR0cHM6Ly9mZ2FjeWMtZGV2LnVzLmF1dGgwLmNvbS91c2VyaW5mbyJdLCJpYXQiOjE3MjMxMjY4NzYsImV4cCI6MTcyMzIxMzI3Niwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCIsImF6cCI6IlJqeUc2dVFBTGo3YXVyYVdSMWFvenhlREZTWGZSYVM1In0.RHiAgiAoeYTD5x50lk_A1Dt_x5AkYi6hu5Dai82RDhTUW41FK5WFWRPp3qsGsmqg103F029ZjW8X2oO8D0IM8stQYbwU-rlhTLjF63JFNFT6XWxQDybDjnP2Y-mbCtw39FUmsYbRzJ2f0y0SYj0OM_lIoRgqke-YcG_eHjOIaj6gQln8-qoNIHUvIrHiH2nYhf0LYLAgNljqJ_Yc753K73XLdDLyjmrohWdP0Q0ZdOj_ielcdwI6F-7QXN1OtdLRVN9YBG9TSIYJ-USHt128fP9aDlVtvYAvMMp6Ko9GWombUfjyJ922_ct8ofyJwUNhris2kb-684STBQ3U8MP5xw' },
+        headers:  { Authorization: `Bearer ${token}` },
       });
       const explorerPlugin = GraphiQLPluginExplorer.explorerPlugin();
       root.render(
