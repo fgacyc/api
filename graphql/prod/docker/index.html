@@ -72,6 +72,7 @@
         domain: 'fgacyc.us.auth0.com',
         clientId: 'Y1g2z7UBAzSqR7RPHvvvwLAb4JVXLx6z', // ERP App (it is safe to expose Client ID, it is public anyways)
         authorizationParams: {
+          redirect_uri: window.location.origin,
           audience: 'https://graphql.fgacyc.com',
         }
       });
