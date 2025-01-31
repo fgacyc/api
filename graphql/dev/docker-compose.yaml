@@ -1,7 +1,6 @@
 version: '3'
 services:
   rest:
-    container_name: pg_postgrest
     image: postgrest/postgrest:v10.0.0
     restart: unless-stopped
     ports:
@@ -14,7 +13,6 @@ services:
       ./.env
 
   graphiql:
-    container_name: pg_graphiql
     image: nginx
     volumes:
       - ./docker:/usr/share/nginx/html

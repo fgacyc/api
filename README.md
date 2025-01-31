@@ -15,6 +15,10 @@ create function public.graphql(
 as $$
     select graphql.resolve(query, variables);
 $$;
+
+create role anon noinherit;
+create role authenticator noinherit;
+grant anon to authenticator;
 ```
 
 ### 2. Hosting the server
