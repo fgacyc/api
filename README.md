@@ -52,8 +52,8 @@ as $$
 $$;
 
 create role anon noinherit;
-create role authenticator noinherit;
-grant anon to authenticator;
+create role fgacyc.official noinherit;
+grant anon to fgacyc.official;
 ```
 
 ### 2. Hosting the server
@@ -62,4 +62,45 @@ Make sure you have the correct `.env`, then run `docker compose up -d`. Refer to
 
 Also, remember to update the url in `docker/index.html` in case the url changes
 
-##
+### 3. Authentication
+
+Refer to [PostgREST Auth](https://docs.postgrest.org/en/v12/references/auth.html) to see how authentication works through 
+Json Web Token (JWT). 
+
+In order for that to work, we needed to add a custom claim `role: "fgacyc.official"` to every access token through Auth0 
+Actions. The following snippet is what we have now in production:
+
+```js
+const event = `post-login`;
+const action = `Set custom claims`;
+const logInfo = (...args) => console.log(`${event}(${action}): `, ...args);
+const logError = (...args) => console.error(`${event}(${action}): `, ...args);
+
+/**
+ * Handler that will be called during the execution of a PostLogin flow.
+ *
+ * @param {Event} event - Details about the user and the context in which they are logging in.
+ * @param {PostLoginAPI} api - Interface whose methods can be used to change the behavior of the login.
+ */
+exports.onExecutePostLogin = async (event, api) => {
+  logInfo(
+    `${event.user.user_id} (${event.user.email}) from ${event.client.name}(${event.client.client_id})`,
+  );
+
+  // Add email into the user claims.
+  api.accessToken.setCustomClaim("email", event.user.email);
+  api.accessToken.setCustomClaim("role", event.user.app_metadata && 'role' in event.user.app_metadata ? event.user.app_metadata.role : 'fgacyc.official')
+  logInfo(`Added 'email' claim onto ${event.user.email}'s access token.`);
+  logInfo(`Added 'role' claim onto ${event.user.email}'s access token.`)
+};
+
+/**
+ * Handler that will be invoked when this action is resuming after an external redirect. If your
+ * onExecutePostLogin function does not perform a redirect, this function can be safely ignored.
+ *
+ * @param {Event} event - Details about the user and the context in which they are logging in.
+ * @param {PostLoginAPI} api - Interface whose methods can be used to change the behavior of the login.
+ */
+// exports.onContinuePostLogin = async (event, api) => {
+// };
+```
