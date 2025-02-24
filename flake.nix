@@ -19,7 +19,7 @@
         };
       in
       {
-        devShells.default = pkgs.mkShell rec {
+        devShells.default = pkgs.mkShell {
           name = "api";
 
           packages = with pkgs; [
