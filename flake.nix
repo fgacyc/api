@@ -25,6 +25,7 @@
           packages = with pkgs; [
             openssl
             pkg-config
+            bun
 
             pgcli
             sqlx-cli
