@@ -1,6 +1,7 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import formidable from "formidable";
 import { readFile } from "node:fs/promises";
+import { randomUUID } from 'node:crypto'
 
 export default defineEventHandler(async (event) => {
     const s3 = new S3Client({
@@ -20,7 +21,7 @@ export default defineEventHandler(async (event) => {
 
     const buffer = await readFile(_files[0].filepath);
 
-    const key = `uploads/${_files[0].originalFilename}`;
+    const key = randomUUID().toString();
 
     await s3.send(
         new PutObjectCommand({
@@ -31,5 +32,5 @@ export default defineEventHandler(async (event) => {
         }),
     );
 
-    return { url: `/api/file?key=${encodeURIComponent(key)}` };
+    return { url: `https://${import.meta.env.NITRO_DOMAIN}/api/file?key=${encodeURIComponent(key)}` };
 });
