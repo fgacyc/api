@@ -30,6 +30,7 @@
               openssl
               pkg-config
               bun
+              nodejs
 
               uv
               python312

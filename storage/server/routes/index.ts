@@ -1,3 +1,3 @@
 export default defineEventHandler((event) => {
-	return "Start by editing <code>server/routes/index.ts</code>.";
+    return "Use GET /file to download files and POST /upload to upload files.";
 });
