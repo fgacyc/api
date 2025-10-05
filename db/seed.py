@@ -167,6 +167,20 @@ def map_satellite(s: str):
     match s.lower():
         case "seremban":
             return "FGACYC Seremban"
+        case "kuchai gs":
+            return "FGACYC Kuchai GS"
+        case "kuchai yw":
+            return "FGACYC Kuchai YW"
+        case "setapak":
+            return "FGACYC Setapak"
+        case "serdang":
+            return "FGACYC Serdang"
+        case "kepong":
+            return "FGACYC Kepong"
+        case "usj":
+            return "FGACYC USJ"
+        case "sg.long":
+            return "FGACYC SG Long"
 
 
 async def main():
@@ -194,9 +208,6 @@ async def main():
             # Insert satellite
             satellite_id = await get_or_create_satellite(conn, satellite_name)
 
-            # Insert connect group
-            cg_id = await get_or_create_connect_group(conn, cg_name, satellite_id)
-
             # Insert user
             user_id = await get_or_create_user(conn, full_name)
 
@@ -204,7 +215,10 @@ async def main():
             role_id = await get_pastoral_role_id(conn, pastoral_status)
 
             # Link user to connect group
-            await link_user_to_group(conn, user_id, cg_id, role_id)
+            if cg_name != "-":
+                # Insert connect group
+                cg_id = await get_or_create_connect_group(conn, cg_name, satellite_id)
+                await link_user_to_group(conn, user_id, cg_id, role_id)
 
             print(
                 f"[OK] Seeded user {full_name} with role {pastoral_status} in CG {cg_name}"
